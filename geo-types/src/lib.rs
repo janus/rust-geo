@@ -88,16 +88,16 @@ mod test {
     #[test]
     fn polygon_new_test() {
         let exterior = LineString(vec![
-            Point::new(0., 0.),
-            Point::new(1., 1.),
-            Point::new(1., 0.),
-            Point::new(0., 0.),
+            Coordinate { x: 0., y: 0. },
+            Coordinate { x: 1., y: 1. },
+            Coordinate { x: 1., y: 0. },
+            Coordinate { x: 0., y: 0. },
         ]);
         let interiors = vec![LineString(vec![
-            Point::new(0.1, 0.1),
-            Point::new(0.9, 0.9),
-            Point::new(0.9, 0.1),
-            Point::new(0.1, 0.1),
+            Coordinate { x: 0.1, y: 0.1 },
+            Coordinate { x: 0.9, y: 0.9 },
+            Coordinate { x: 0.9, y: 0.1 },
+            Coordinate { x: 0.1, y: 0.1 },
         ])];
         let p = Polygon::new(exterior.clone(), interiors.clone());
 

@@ -33,12 +33,20 @@ where
     /// # Examples
     ///
     /// ```
-    /// use geo_types::{Point, LineString, Polygon};
+    /// use geo_types::{Coordinate, LineString, Polygon};
     ///
-    /// let exterior = LineString(vec![Point::new(0., 0.), Point::new(1., 1.),
-    ///                                Point::new(1., 0.), Point::new(0., 0.)]);
-    /// let interiors = vec![LineString(vec![Point::new(0.1, 0.1), Point::new(0.9, 0.9),
-    ///                                      Point::new(0.9, 0.1), Point::new(0.1, 0.1)])];
+    /// let exterior = LineString(vec![
+    ///     Coordinate { x: 0., y: 0. },
+    ///     Coordinate { x: 1., y: 1. },
+    ///     Coordinate { x: 1., y: 0. },
+    ///     Coordinate { x: 0., y: 0. },
+    /// ]);
+    /// let interiors = vec![LineString(vec![
+    ///     Coordinate { x: 0.1, y: 0.1 },
+    ///     Coordinate { x: 0.9, y: 0.9 },
+    ///     Coordinate { x: 0.9, y: 0.1 },
+    ///     Coordinate { x: 0.1, y: 0.1 },
+    /// ])];
     /// let p = Polygon::new(exterior.clone(), interiors.clone());
     /// assert_eq!(p.exterior, exterior);
     /// assert_eq!(p.interiors, interiors);

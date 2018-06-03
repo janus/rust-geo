@@ -1,4 +1,4 @@
-use num_traits::{Float, ToPrimitive};
+use num_traits::ToPrimitive;
 use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
@@ -178,48 +178,6 @@ where
     /// ```
     pub fn set_lat(&mut self, lat: T) -> &mut Point<T> {
         self.set_y(lat)
-    }
-
-    /// Returns the dot product of the two points:
-    /// `dot = x1 * x2 + y1 * y2`
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use geo_types::Point;
-    ///
-    /// let p = Point::new(1.5, 0.5);
-    /// let dot = p.dot(&Point::new(2.0, 4.5));
-    ///
-    /// assert_eq!(dot, 5.25);
-    /// ```
-    pub fn dot(&self, point: &Point<T>) -> T {
-        self.x() * point.x() + self.y() * point.y()
-    }
-
-    /// Returns the cross product of 3 points. A positive value implies
-    /// `self` → `point_b` → `point_c` is counter-clockwise, negative implies
-    /// clockwise.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use geo_types::Point;
-    ///
-    /// let p_a = Point::new(1.0, 2.0);
-    /// let p_b = Point::new(3.0,5.0);
-    /// let p_c = Point::new(7.0,12.0);
-    ///
-    /// let cross = p_a.cross_prod(&p_b, &p_c);
-    ///
-    /// assert_eq!(cross, 2.0)
-    /// ```
-    pub fn cross_prod(&self, point_b: &Point<T>, point_c: &Point<T>) -> T
-    where
-        T: Float,
-    {
-        (point_b.x() - self.x()) * (point_c.y() - self.y())
-            - (point_b.y() - self.y()) * (point_c.x() - self.x())
     }
 }
 

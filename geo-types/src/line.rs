@@ -43,6 +43,14 @@ where
     pub fn to_points(&self) -> (Point<T>, Point<T>) {
         (Point(self.start), Point(self.end))
     }
+
+    pub fn delta_x(&self) -> T {
+        self.end.x - self.start.x
+    }
+
+    pub fn delta_y(&self) -> T {
+        self.end.y - self.start.y
+    }
 }
 
 #[cfg(feature = "spade")]
@@ -50,7 +58,7 @@ impl<T> ::spade::SpatialObject for Line<T>
 where
     T: ::num_traits::Float + ::spade::SpadeNum + ::std::fmt::Debug,
 {
-    type Point = ::Point<T>;
+    type Point = Point<T>;
 
     fn mbr(&self) -> ::spade::BoundingRect<Self::Point> {
         let bbox = self.bbox();

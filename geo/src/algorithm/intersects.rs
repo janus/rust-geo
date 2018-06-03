@@ -154,10 +154,10 @@ where
                 if u_b == T::zero() {
                     continue;
                 }
-                let ua_t = (b.end.x() - b.start.x()) * (a.start.y() - b.start.y())
-                    - (b.end.y() - b.start.y()) * (a.start.x() - b.start.x());
-                let ub_t = (a.end.x() - a.start.x()) * (a.start.y() - b.start.y())
-                    - (a.end.y() - a.start.y()) * (a.start.x() - b.start.x());
+                let ua_t = (b.end.x - b.start.x) * (a.start.y - b.start.y)
+                    - (b.end.y - b.start.y) * (a.start.x - b.start.x);
+                let ub_t = (a.end.x - a.start.x) * (a.start.y - b.start.y)
+                    - (a.end.y - a.start.y) * (a.start.x - b.start.x);
                 let u_a = ua_t / u_b;
                 let u_b = ub_t / u_b;
                 if (T::zero() <= u_a) && (u_a <= T::one()) && (T::zero() <= u_b)

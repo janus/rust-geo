@@ -1,4 +1,4 @@
-use {CoordinateType, Coordinate};
+use {CoordinateType, Coordinate, Point};
 
 #[cfg(feature = "spade")]
 use algorithms::{BoundingBox, EuclideanDistance};
@@ -39,6 +39,10 @@ where
             end
         }
     }
+
+    pub fn to_points(&self) -> (Point<T>, Point<T>) {
+        (Point(self.start), Point(self.end))
+    }
 }
 
 #[cfg(feature = "spade")]
@@ -46,7 +50,7 @@ impl<T> ::spade::SpatialObject for Line<T>
 where
     T: ::num_traits::Float + ::spade::SpadeNum + ::std::fmt::Debug,
 {
-    type Point = Point<T>;
+    type Point = ::Point<T>;
 
     fn mbr(&self) -> ::spade::BoundingRect<Self::Point> {
         let bbox = self.bbox();

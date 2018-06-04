@@ -1,4 +1,4 @@
-use {CoordinateType, Coordinate, Point};
+use {CoordinateType, Coordinate};
 
 #[cfg(feature = "spade")]
 use algorithms::{BoundingBox, EuclideanDistance};

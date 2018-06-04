@@ -45,14 +45,14 @@ where
 fn get_bbox<'a, I, T>(collection: I) -> Option<Bbox<T>>
 where
     T: 'a + CoordinateType,
-    I: 'a + IntoIterator<Item = &'a Point<T>>
+    I: 'a + IntoIterator<Item = &'a Coordinate<T>>
 {
     let mut iter = collection.into_iter();
     if let Some(pnt) = iter.next() {
-        let mut xrange = (pnt.x(), pnt.x());
-        let mut yrange = (pnt.y(), pnt.y());
+        let mut xrange = (pnt.x, pnt.x);
+        let mut yrange = (pnt.y, pnt.y);
         for pnt in iter {
-            let (px, py) = (pnt.x(), pnt.y());
+            let (px, py) = (pnt.x, pnt.y);
             xrange = get_min_max(px, xrange.0, xrange.1);
             yrange = get_min_max(py, yrange.0, yrange.1);
         }
@@ -89,15 +89,15 @@ where
     fn bbox(&self) -> Self::Output {
         let a = self.start;
         let b = self.end;
-        let (xmin, xmax) = if a.x() <= b.x() {
-            (a.x(), b.x())
+        let (xmin, xmax) = if a.x <= b.x {
+            (a.x, b.x)
         } else {
-            (b.x(), a.x())
+            (b.x, a.x)
         };
-        let (ymin, ymax) = if a.y() <= b.y() {
-            (a.y(), b.y())
+        let (ymin, ymax) = if a.y <= b.y {
+            (a.y, b.y)
         } else {
-            (b.y(), a.y())
+            (b.y, a.y)
         };
         Bbox {
             xmin,

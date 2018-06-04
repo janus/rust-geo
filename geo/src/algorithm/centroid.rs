@@ -37,7 +37,7 @@ where
     }
     let mut tmp = T::zero();
     for line in linestring.lines() {
-        tmp = tmp + (line.start.x() * line.end.y() - line.end.x() * line.start.y());
+        tmp = tmp + line.determinant();
     }
     tmp / (T::one() + T::one())
 }
@@ -55,7 +55,7 @@ where
     let mut sum_x = T::zero();
     let mut sum_y = T::zero();
     for line in poly_ext.lines() {
-        let tmp = line.start.x() * line.end.y() - line.end.x() * line.start.y();
+        let tmp = line.determinant();
         sum_x = sum_x + ((line.end.x() + line.start.x()) * tmp);
         sum_y = sum_y + ((line.end.y() + line.start.y()) * tmp);
     }
@@ -71,8 +71,8 @@ where
 
     fn centroid(&self) -> Self::Output {
         let two = T::one() + T::one();
-        let x = (self.start.x() + self.end.x()) / two;
-        let y = (self.start.y() + self.end.y()) / two;
+        let x = self.start.x() + self.dx() / two;
+        let y = self.start.y() + self.dy() / two;
         Point::new(x, y)
     }
 }
@@ -97,10 +97,10 @@ where
             let mut total_length = T::zero();
             for line in self.lines() {
                 let segment_len = line.euclidean_length();
-                let (x1, y1, x2, y2) = (line.start.x(), line.start.y(), line.end.x(), line.end.y());
+                let line_center = line.centroid();
                 total_length = total_length + segment_len;
-                sum_x = sum_x + segment_len * ((x1 + x2) / (T::one() + T::one()));
-                sum_y = sum_y + segment_len * ((y1 + y2) / (T::one() + T::one()));
+                sum_x = sum_x + segment_len * line_center.x();
+                sum_y = sum_y + segment_len * line_center.y();
             }
             Some(Point::new(sum_x / total_length, sum_y / total_length))
         }

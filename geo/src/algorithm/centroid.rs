@@ -56,8 +56,8 @@ where
     let mut sum_y = T::zero();
     for line in poly_ext.lines() {
         let tmp = line.determinant();
-        sum_x = sum_x + ((line.end.x() + line.start.x()) * tmp);
-        sum_y = sum_y + ((line.end.y() + line.start.y()) * tmp);
+        sum_x = sum_x + ((line.end.x + line.start.x) * tmp);
+        sum_y = sum_y + ((line.end.y + line.start.y) * tmp);
     }
     let six = T::from_i32(6).unwrap();
     Some(Point::new(sum_x / (six * area), sum_y / (six * area)))
@@ -90,7 +90,7 @@ where
             return None;
         }
         if self.0.len() == 1 {
-            Some(self.0[0])
+            Some(Point(self.0[0]))
         } else {
             let mut sum_x = T::zero();
             let mut sum_y = T::zero();
@@ -129,7 +129,7 @@ where
             return None;
         }
         if vect.len() == 1 {
-            Some(Point::new(vect[0].x(), vect[0].y()))
+            Some(Point::new(vect[0].x, vect[0].y))
         } else {
             let external_centroid = simple_polygon_centroid(&self.exterior)?;
             if !self.interiors.is_empty() {
@@ -213,8 +213,7 @@ mod test {
     // Tests: Centroid of LineString
     #[test]
     fn empty_linestring_test() {
-        let vec = Vec::<Point<f64>>::new();
-        let linestring = LineString(vec);
+        let linestring = LineString::from(vec![]);
         let centroid = linestring.centroid();
         assert!(centroid.is_none());
     }

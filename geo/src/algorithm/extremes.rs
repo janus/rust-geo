@@ -169,10 +169,10 @@ where
         // safe to unwrap, since we're guaranteeing the polygon's convexity
         let indices = ch.extreme_indices().unwrap();
         ExtremePoint {
-            ymin: ch.exterior.0[indices.ymin],
-            xmax: ch.exterior.0[indices.xmax],
-            ymax: ch.exterior.0[indices.ymax],
-            xmin: ch.exterior.0[indices.xmin],
+            ymin: Point(ch.exterior.0[indices.ymin]),
+            xmax: Point(ch.exterior.0[indices.xmax]),
+            ymax: Point(ch.exterior.0[indices.ymax]),
+            xmin: Point(ch.exterior.0[indices.xmin]),
         }
     }
 }

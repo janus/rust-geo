@@ -38,11 +38,11 @@ where
             start,
             end
         }
-    }
+   }
 
-    // pub fn to_points(&self) -> (Point<T>, Point<T>) {
-    //     (Point(self.start), Point(self.end))
-    // }
+    pub fn to_points(&self) -> (Point<T>, Point<T>) {
+        (Point(self.start), Point(self.end))
+    }
 
     /// Calculate the difference in ‘x’ components (Δx).
     ///
@@ -52,7 +52,7 @@ where
     /// line.end.x() - line.start.x()
     /// ```
     pub fn dx(&self) -> T {
-        self.end.x() - self.start.x()
+        self.end.x - self.start.x
     }
 
     /// Calculate the difference in ‘y’ components (Δy).
@@ -63,7 +63,7 @@ where
     /// line.end.y() - line.start.y()
     /// ```
     pub fn dy(&self) -> T {
-        self.end.y() - self.start.y()
+        self.end.y - self.start.y
     }
 
     /// Calculate the slope (Δy/Δx).
@@ -88,7 +88,7 @@ where
     ///
     /// [determinant]: https://en.wikipedia.org/wiki/Determinant
     pub fn determinant(&self) -> T {
-        self.start.x() * self.end.y() - self.start.y() * self.end.x()
+        self.start.x * self.end.y - self.start.y * self.end.x
     }
 }
 

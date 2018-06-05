@@ -97,7 +97,7 @@ mod test {
     #[test]
     fn line_test() {
         let line0 = Line::new(Coordinate { x: 0., y: 0. }, Coordinate { x: 0., y: 1. });
-        let line0 = Line::new(Coordinate { x: 0., y: 0. }, Coordinate { x: 3., y: 4. });
+        let line1 = Line::new(Coordinate { x: 0., y: 0. }, Coordinate { x: 3., y: 4. });
         assert_eq!(line0.euclidean_length(), 1.);
         assert_eq!(line1.euclidean_length(), 5.);
     }

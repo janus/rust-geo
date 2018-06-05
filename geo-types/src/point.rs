@@ -181,6 +181,49 @@ where
     }
 }
 
+impl<T> Point<T>
+where
+    T: CoordinateType,
+{
+    /// Returns the dot product of the two points:
+    /// `dot = x1 * x2 + y1 * y2`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geo_types::Coordinate;
+    ///
+    /// let coord = Coordinate { x: 1.5, y: 0.5 };
+    /// let dot = coord.dot(&Coordinate { x: 2.0, y: 4.5 });
+    ///
+    /// assert_eq!(dot, 5.25);
+    /// ```
+    pub fn dot(&self, coord: &Coordinate<T>) -> T {
+        unimplemented!()
+    }
+
+    /// Returns the cross product of 3 points. A positive value implies
+    /// `self` → `point_b` → `point_c` is counter-clockwise, negative implies
+    /// clockwise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geo_types::Coordinate;
+    ///
+    /// let coord_a = Coordinate { x: 1., y: 2. };
+    /// let coord_b = Coordinate { x: 3., y: 5. };
+    /// let coord_c = Coordinate { x: 7., y: 12. };
+    ///
+    /// let cross = coord_a.cross_prod(&coord_b, &coord_c);
+    ///
+    /// assert_eq!(cross, 2.0)
+    /// ```
+    pub fn cross_prod(&self, point_b: &Point<T>, point_c: &Point<T>) -> T {
+        unimplemented!()
+    }
+}
+
 impl<T> Neg for Point<T>
 where
     T: CoordinateType + Neg<Output = T> + ToPrimitive,

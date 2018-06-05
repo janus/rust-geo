@@ -6,7 +6,7 @@ use algorithm::map_coords::MapCoords;
 // rotate a slice of points "angle" degrees about an origin
 // origin can be an arbitrary point, pass &Point::new(0., 0.)
 // for the actual origin
-fn rotation_matrix<T>(angle: T, origin: &Point<T>, points: &[Point<T>]) -> Vec<Point<T>>
+fn rotation_matrix<T>(angle: T, origin: &Point<T>, points: &[Point<T>]) -> Vec<Coordinate<T>>
 where
     T: Float,
 {
@@ -18,10 +18,10 @@ where
         .map(|point| {
             let x = point.x() - x0;
             let y = point.y() - y0;
-            Point::new(
-                x * cos_theta - y * sin_theta + x0,
-                x * sin_theta + y * cos_theta + y0,
-            )
+            Coordinate {
+                x: x * cos_theta - y * sin_theta + x0,
+                y: x * sin_theta + y * cos_theta + y0,
+            }
         })
         .collect::<Vec<_>>()
 }
@@ -120,9 +120,9 @@ where
     T: Float,
 {
     fn rotate(&self, angle: T) -> Self {
-        let pts = vec![self.start, self.end];
+        let pts = vec![Point(self.start), Point(self.end)];
         let rotated = rotation_matrix(angle, &self.centroid(), &pts);
-        Line::new(rotated[0], rotated[1])
+        Line::new(rotated[0].0, rotated[1].0)
     }
 }
 
@@ -201,11 +201,12 @@ mod test {
     }
     #[test]
     fn test_rotate_linestring() {
-        let mut vec = Vec::new();
-        vec.push(Point::new(0.0, 0.0));
-        vec.push(Point::new(5.0, 5.0));
-        vec.push(Point::new(10.0, 10.0));
-        let linestring = LineString(vec);
+        let vec = vec![
+            (0.0, 0.0),
+            (5.0, 5.0),
+            (10.0, 10.0),
+        ];
+        let linestring = LineString::from(vec);
         let rotated = linestring.rotate(-45.0);
         let mut correct = Vec::new();
         correct.push(Point::new(-2.0710678118654755, 5.0));
@@ -217,7 +218,7 @@ mod test {
     }
     #[test]
     fn test_rotate_polygon() {
-        let points_raw = vec![
+        let coords = vec![
             (5., 1.),
             (4., 2.),
             (4., 3.),
@@ -228,11 +229,7 @@ mod test {
             (6., 1.),
             (5., 1.),
         ];
-        let points = points_raw
-            .iter()
-            .map(|e| Point::new(e.0, e.1))
-            .collect::<Vec<_>>();
-        let poly1 = Polygon::new(LineString(points), vec![]);
+        let poly1 = Polygon::new(LineString::from(coords), vec![]);
         let rotated = poly1.rotate(-15.0);
         let correct_outside = vec![
             (4.628808519201685, 1.1805207831176578),

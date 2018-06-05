@@ -1,5 +1,5 @@
 use std::iter::FromIterator;
-use {Coordinate, CoordinateType, Line};
+use {Coordinate, CoordinateType, Line, Point};
 
 /// An ordered collection of two or more [`Coordinate`s](struct.Coordinate.html), representing a
 /// path between locations.
@@ -72,6 +72,10 @@ where
     T: CoordinateType;
 
 impl<T: CoordinateType> LineString<T> {
+    pub fn points<'a>(&'a self) -> impl Iterator<Item = Point<T>> + 'a {
+        self.0.iter().map(|coord| Point(*coord))
+    }
+
     /// Return an `Line` iterator that yields one `Line` for each line segment
     /// in the `LineString`.
     ///

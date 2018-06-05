@@ -247,7 +247,7 @@ where
 {
     /// Minimum distance from a Line to a Point
     fn euclidean_distance(&self, point: &Point<T>) -> T {
-        line_segment_distance(point, &self.start, &self.end)
+        line_segment_distance(point, &self.start.into(), &self.end.into())
     }
 }
 

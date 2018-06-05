@@ -16,8 +16,8 @@ where
 {
     let poly1_extremes = poly1.extreme_indices().unwrap();
     let poly2_extremes = poly2.extreme_indices().unwrap();
-    let ymin1 = poly1.exterior.0[poly1_extremes.ymin];
-    let ymax2 = poly2.exterior.0[poly2_extremes.ymax];
+    let ymin1 = Point(poly1.exterior.0[poly1_extremes.ymin]);
+    let ymax2 = Point(poly2.exterior.0[poly2_extremes.ymax]);
 
     let mut state = Polydist {
         poly1,
@@ -58,7 +58,7 @@ fn vertex_line_distance<T>(v: &Point<T>, p: &Point<T>, q: &Point<T>) -> T
 where
     T: Float,
 {
-    v.euclidean_distance(&Line::new(*p, *q))
+    v.euclidean_distance(&Line::new(p.0, q.0))
 }
 
 /// Wrap-around previous Polygon index
@@ -135,9 +135,9 @@ where
     if *slope != T::zero() {
         cos = cossq.sqrt();
         sin = sinsq.sqrt();
-        if pnext.x() > p.x() {
-            if pprev.x() > p.x() {
-                if pprev.y() >= p.y() && pnext.y() >= p.y() {
+        if pnext.x > p.x() {
+            if pprev.x > p.x() {
+                if pprev.y >= p.y() && pnext.y >= p.y() {
                     if *slope > T::zero() {
                         slope_prev = Line::new(*p, pprev).slope();
                         if clockwise && *slope <= slope_prev || !clockwise && *slope >= slope_prev {

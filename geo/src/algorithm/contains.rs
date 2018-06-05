@@ -164,14 +164,14 @@ where
     let mut xints = T::zero();
     let mut crossings = 0;
     for line in linestring.lines() {
-        if p.y() > line.start.y().min(line.end.y()) && p.y() <= line.start.y().max(line.end.y())
-            && p.x() <= line.start.x().max(line.end.x())
+        if p.y() > line.start.y.min(line.end.y) && p.y() <= line.start.y.max(line.end.y)
+            && p.x() <= line.start.x.max(line.end.x)
         {
-            if line.start.y() != line.end.y() {
-                xints = (p.y() - line.start.y()) * (line.end.x() - line.start.x())
-                    / (line.end.y() - line.start.y()) + line.start.x();
+            if line.start.y() != line.end.y {
+                xints = (p.y() - line.start.y) * (line.end.x - line.start.x)
+                    / (line.end.y - line.start.y) + line.start.x();
             }
-            if (line.start.x() == line.end.x()) || (p.x() <= xints) {
+            if (line.start.x == line.end.x) || (p.x() <= xints) {
                 crossings += 1;
             }
         }
@@ -234,7 +234,7 @@ where
 {
     fn contains(&self, linestring: &LineString<T>) -> bool {
         // All LineString points must be inside the Polygon
-        if linestring.0.iter().all(|point| self.contains(point)) {
+        if linestring.points().all(|point| self.contains(point)) {
             // The Polygon interior is allowed to intersect with the LineString
             // but the Polygon's rings are not
             !self.interiors

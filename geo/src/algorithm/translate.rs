@@ -54,11 +54,11 @@ mod test {
   }
   #[test]
   fn test_translate_linestring() {
-    let mut vec = Vec::new();
-    vec.push(Point::new(0.0, 0.0));
-    vec.push(Point::new(5.0, 1.0));
-    vec.push(Point::new(10.0, 0.0));
-    let linestring = LineString(vec);
+    let linestring = LineString::from(vec![
+      (0.0, 0.0),
+      (5.0, 1.0),
+      (10.0, 0.0),
+    ]);
     let translated = linestring.translate(17.0, 18.0);
     let mut correct = Vec::new();
     correct.push(Point::new(17.0, 18.0));

@@ -1,5 +1,5 @@
 use num_traits::Float;
-use ::{LineString, MultiLineString, MultiPolygon, Point, Polygon, Line};
+use ::{LineString, MultiLineString, MultiPolygon, Point, Polygon, Line, Coordinate};
 use algorithm::euclidean_distance::EuclideanDistance;
 
 // perpendicular distance from a point to a line

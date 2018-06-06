@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 use num_traits::Float;
 use ::{LineString, MultiLineString, MultiPolygon, Point, Polygon, Line, Coordinate};
+=======
+>>>>>>> origin/master
 use algorithm::euclidean_distance::EuclideanDistance;
+use num_traits::Float;
+use {Line, LineString, MultiLineString, MultiPolygon, Point, Polygon};
 
 // Ramer–Douglas-Peucker line simplification algorithm
 fn rdp<T>(points: &[Point<T>], epsilon: &T) -> Vec<Point<T>>
@@ -149,24 +154,47 @@ mod test {
 
     #[test]
     fn multilinestring() {
-        let mline = MultiLineString(vec![LineString::from(vec![
-            (0.0, 0.0),
-            (5.0, 4.0),
-            (11.0, 5.5),
-            (17.3, 3.2),
-            (27.8, 0.1),
+<<<<<<< HEAD
+        let mline = MultiLineString(vec![
+            LineString::from(vec![
+                (0.0, 0.0),
+                (5.0, 4.0),
+                (11.0, 5.5),
+                (17.3, 3.2),
+                (27.8, 0.1),
+            ]),
+        ]);
+=======
+        let mline = MultiLineString(vec![LineString(vec![
+            Point::new(0.0, 0.0),
+            Point::new(5.0, 4.0),
+            Point::new(11.0, 5.5),
+            Point::new(17.3, 3.2),
+            Point::new(27.8, 0.1),
         ])]);
+>>>>>>> origin/master
 
         let mline2 = mline.simplify(&1.0);
 
         assert_eq!(
             mline2,
-            MultiLineString(vec![LineString::from(vec![
-                (0.0, 0.0),
-                (5.0, 4.0),
-                (11.0, 5.5),
-                (27.8, 0.1),
+<<<<<<< HEAD
+            MultiLineString(vec![
+                LineString::from(vec![
+                    (0.0, 0.0),
+                    (5.0, 4.0),
+                    (11.0, 5.5),
+                    (27.8, 0.1),
+                ]),
+            ])
+=======
+            MultiLineString(vec![LineString(vec![
+                Point::new(0.0, 0.0),
+                Point::new(5.0, 4.0),
+                Point::new(11.0, 5.5),
+                Point::new(27.8, 0.1),
             ])])
+>>>>>>> origin/master
         );
     }
 
@@ -203,14 +231,46 @@ mod test {
 
     #[test]
     fn multipolygon() {
+<<<<<<< HEAD
+        let mpoly = MultiPolygon(vec![
+            Polygon::new(
+                LineString::from(vec![
+                    (0., 0.),
+                    (0., 10.),
+                    (5., 11.),
+                    (10., 10.),
+                    (10., 0.),
+                    (0., 0.),
+                ]),
+                vec![],
+            ),
+        ]);
+
+        let mpoly2 = mpoly.simplify(&2.);
+
+        assert_eq!(
+            mpoly2,
+            MultiPolygon(vec![
+                Polygon::new(
+                    LineString::from(vec![
+                        (0., 0.),
+                        (0., 10.),
+                        (10., 10.),
+                        (10., 0.),
+                        (0., 0.),
+                    ]),
+                    vec![],
+                ),
+            ])
+=======
         let mpoly = MultiPolygon(vec![Polygon::new(
-            LineString::from(vec![
-                (0., 0.),
-                (0., 10.),
-                (5., 11.),
-                (10., 10.),
-                (10., 0.),
-                (0., 0.),
+            LineString(vec![
+                Point::new(0., 0.),
+                Point::new(0., 10.),
+                Point::new(5., 11.),
+                Point::new(10., 10.),
+                Point::new(10., 0.),
+                Point::new(0., 0.),
             ]),
             vec![],
         )]);
@@ -220,15 +280,16 @@ mod test {
         assert_eq!(
             mpoly2,
             MultiPolygon(vec![Polygon::new(
-                LineString::from(vec![
-                    (0., 0.),
-                    (0., 10.),
-                    (10., 10.),
-                    (10., 0.),
-                    (0., 0.),
+                LineString(vec![
+                    Point::new(0., 0.),
+                    Point::new(0., 10.),
+                    Point::new(10., 10.),
+                    Point::new(10., 0.),
+                    Point::new(0., 0.),
                 ]),
                 vec![],
             )])
+>>>>>>> origin/master
         );
     }
 }

@@ -38,10 +38,6 @@ where
             start,
             end
         }
-   }
-
-    pub fn to_points(&self) -> (Point<T>, Point<T>) {
-        (Point(self.start), Point(self.end))
     }
 
     /// Calculate the difference in ‘x’ components (Δx).
@@ -103,6 +99,18 @@ where
     /// [determinant]: https://en.wikipedia.org/wiki/Determinant
     pub fn determinant(&self) -> T {
         self.start.x * self.end.y - self.start.y * self.end.x
+    }
+
+    pub fn start_point(&self) -> Point<T> {
+        Point(self.start)
+    }
+
+    pub fn end_point(&self) -> Point<T> {
+        Point(self.end)
+    }
+
+    pub fn points(&self) -> (Point<T>, Point<T>) {
+        (self.start_point(), self.end_point())
     }
 }
 

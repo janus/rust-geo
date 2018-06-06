@@ -107,7 +107,7 @@ where
     let mut furthest_idx = 0;
     for (idx, point) in set.iter().enumerate() {
         // let current_distance = pseudo_distance(p_a, p_b, point);
-        let current_distance = point.euclidean_distance(&Line::new(*p_a, *p_b));
+        let current_distance = point.euclidean_distance(&Line::from([*p_a, *p_b]));
         if current_distance > furthest_distance {
             furthest_distance = current_distance;
             furthest_idx = idx
@@ -208,7 +208,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use ::Point;
+    use ::{Point, Coordinate};
     use super::*;
 
     #[test]
@@ -345,59 +345,59 @@ mod test {
     #[test]
     fn quick_hull_linestring_test() {
         let v = vec![
-            Point::new(0.0, 10.0),
-            Point::new(1.0, 1.0),
-            Point::new(10.0, 0.0),
-            Point::new(1.0, -1.0),
-            Point::new(0.0, -10.0),
-            Point::new(-1.0, -1.0),
-            Point::new(-10.0, 0.0),
-            Point::new(-1.0, 1.0),
-            Point::new(0.0, 10.0),
+            (0.0, 10.0),
+            (1.0, 1.0),
+            (10.0, 0.0),
+            (1.0, -1.0),
+            (0.0, -10.0),
+            (-1.0, -1.0),
+            (-10.0, 0.0),
+            (-1.0, 1.0),
+            (0.0, 10.0),
         ];
-        let mp = LineString(v);
+        let mp = LineString::from(v);
         let correct = vec![
-            Point::new(0.0, -10.0),
-            Point::new(10.0, 0.0),
-            Point::new(0.0, 10.0),
-            Point::new(-10.0, 0.0),
-            Point::new(0.0, -10.0),
+            (0.0, -10.0),
+            (10.0, 0.0),
+            (0.0, 10.0),
+            (-10.0, 0.0),
+            (0.0, -10.0),
         ];
         let res = mp.convex_hull();
         assert_eq!(res.exterior.0, correct);
     }
     #[test]
     fn quick_hull_multilinestring_test() {
-        let v1 = LineString(vec![Point::new(0.0, 0.0), Point::new(1.0, 10.0)]);
-        let v2 = LineString(vec![
-            Point::new(1.0, 10.0),
-            Point::new(2.0, 0.0),
-            Point::new(3.0, 1.0),
+        let v1 = LineString::from(vec![(0.0, 0.0), (1.0, 10.0)]);
+        let v2 = LineString::from(vec![
+            (1.0, 10.0),
+            (2.0, 0.0),
+            (3.0, 1.0),
         ]);
         let mls = MultiLineString(vec![v1, v2]);
         let correct = vec![
-            Point::new(2.0, 0.0),
-            Point::new(3.0, 1.0),
-            Point::new(1.0, 10.0),
-            Point::new(0.0, 0.0),
-            Point::new(2.0, 0.0),
+            Coordinate::from((2.0, 0.0)),
+            Coordinate::from((3.0, 1.0)),
+            Coordinate::from((1.0, 10.0)),
+            Coordinate::from((0.0, 0.0)),
+            Coordinate::from((2.0, 0.0)),
         ];
         let res = mls.convex_hull();
         assert_eq!(res.exterior.0, correct);
     }
     #[test]
     fn quick_hull_multipolygon_test() {
-        let ls1 = LineString(vec![
-            Point::new(0.0, 0.0),
-            Point::new(1.0, 10.0),
-            Point::new(2.0, 0.0),
-            Point::new(0.0, 0.0),
+        let ls1 = LineString::from(vec![
+            (0.0, 0.0),
+            (1.0, 10.0),
+            (2.0, 0.0),
+            (0.0, 0.0),
         ]);
-        let ls2 = LineString(vec![
-            Point::new(3.0, 0.0),
-            Point::new(4.0, 10.0),
-            Point::new(5.0, 0.0),
-            Point::new(3.0, 0.0),
+        let ls2 = LineString::from(vec![
+            (3.0, 0.0),
+            (4.0, 10.0),
+            (5.0, 0.0),
+            (3.0, 0.0),
         ]);
         let p1 = Polygon::new(ls1, vec![]);
         let p2 = Polygon::new(ls2, vec![]);

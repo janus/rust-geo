@@ -44,7 +44,7 @@ where
     T: Float,
 {
     fn euclidean_distance(&self, point: &Point<T>) -> T {
-        let (start, end) = self.to_points();
+        let (start, end) = self.points();
         line_segment_distance(*point, start, end)
     }
 }

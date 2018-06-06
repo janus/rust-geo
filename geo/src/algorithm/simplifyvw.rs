@@ -392,7 +392,7 @@ where
     let candidates = tree.lookup_in_rectangle(&BoundingRect::from_corners(&br, &tl));
     candidates.iter().any(|c| {
         // triangle start point, end point
-        let (ca, cb) = c.to_points();
+        let (ca, cb) = c.points();
         if ca != point_a && ca != point_c && cb != point_a && cb != point_c
             && cartesian_intersect(&ca, &cb, &point_a, &point_c)
         {
@@ -545,8 +545,8 @@ where
             geomtype: GeomType::Ring,
         };
         let mut simplified = vwp_wrapper(&gt, &self.exterior, Some(&self.interiors), epsilon);
-        let exterior = LineString::fromo(simplified.remove(0));
-        let interiors = simplified.into_iter().map(LineString).collect();
+        let exterior = LineString::from(simplified.remove(0));
+        let interiors = simplified.into_iter().map(LineString::from).collect();
         Polygon::new(exterior, interiors)
     }
 }

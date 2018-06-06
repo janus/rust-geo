@@ -1,4 +1,4 @@
-use ::{CoordinateType, Bbox, Point, MultiPoint, Line, LineString, MultiLineString, Polygon, MultiPolygon};
+use ::{CoordinateType, Coordinate, Bbox, Point, MultiPoint, Line, LineString, MultiLineString, Polygon, MultiPolygon};
 
 /// Calculation of the bounding box of a geometry.
 
@@ -76,7 +76,7 @@ where
     /// Return the BoundingBox for a MultiPoint
     ///
     fn bbox(&self) -> Self::Output {
-        get_bbox(&self.0)
+        get_bbox(&self.0.iter().map(|p| p.0))
     }
 }
 

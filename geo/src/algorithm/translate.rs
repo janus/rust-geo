@@ -61,10 +61,10 @@ mod test {
     ]);
     let translated = linestring.translate(17.0, 18.0);
     let mut correct = Vec::new();
-    correct.push(Point::new(17.0, 18.0));
-    correct.push(Point::new(22.0, 19.0));
-    correct.push(Point::new(27., 18.));
-    let correct_ls = LineString(correct);
+    correct.push((17.0, 18.0));
+    correct.push((22.0, 19.0));
+    correct.push((27., 18.));
+    let correct_ls = LineString::from(correct);
     assert_eq!(translated, correct_ls);
   }
   #[test]
@@ -84,7 +84,7 @@ mod test {
       .iter()
       .map(|e| Point::new(e.0, e.1))
       .collect::<Vec<_>>();
-    let poly1 = Polygon::new(LineString(points), vec![]);
+    let poly1 = Polygon::new(LineString::from(points), vec![]);
     let translated = poly1.translate(17.0, 18.0);
     let correct_outside = vec![
       (22.0, 19.0),
@@ -111,23 +111,23 @@ mod test {
   }
   #[test]
   fn test_rotate_polygon_holes() {
-    let ls1 = LineString(vec![
-      Point::new(5.0, 1.0),
-      Point::new(4.0, 2.0),
-      Point::new(4.0, 3.0),
-      Point::new(5.0, 4.0),
-      Point::new(6.0, 4.0),
-      Point::new(7.0, 3.0),
-      Point::new(7.0, 2.0),
-      Point::new(6.0, 1.0),
-      Point::new(5.0, 1.0),
+    let ls1 = LineString::from(vec![
+      (5.0, 1.0),
+      (4.0, 2.0),
+      (4.0, 3.0),
+      (5.0, 4.0),
+      (6.0, 4.0),
+      (7.0, 3.0),
+      (7.0, 2.0),
+      (6.0, 1.0),
+      (5.0, 1.0),
     ]);
 
-    let ls2 = LineString(vec![
-      Point::new(5.0, 1.3),
-      Point::new(5.5, 2.0),
-      Point::new(6.0, 1.3),
-      Point::new(5.0, 1.3),
+    let ls2 = LineString::from(vec![
+      (5.0, 1.3),
+      (5.5, 2.0),
+      (6.0, 1.3),
+      (5.0, 1.3),
     ]);
 
     let poly1 = Polygon::new(ls1, vec![ls2]);

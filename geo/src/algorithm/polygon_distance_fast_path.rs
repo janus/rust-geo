@@ -128,7 +128,7 @@ where
     let mut sin;
     let pnext = poly.exterior.0[next_vertex(poly, idx)];
     let pprev = poly.exterior.0[prev_vertex(poly, idx)];
-    let clockwise = pprev.cross_prod(p, &pnext) < T::zero();
+    let clockwise = pprev.cross_prod(&p.0, &pnext) < T::zero();
     let slope_prev;
     let slope_next;
     // Slope isn't 0, things are complicated
@@ -139,7 +139,7 @@ where
             if pprev.x > p.x() {
                 if pprev.y >= p.y() && pnext.y >= p.y() {
                     if *slope > T::zero() {
-                        slope_prev = Line::new(*p, pprev).slope();
+                        slope_prev = Line::new(p.0, pprev).slope();
                         if clockwise && *slope <= slope_prev || !clockwise && *slope >= slope_prev {
                             cos = -cos;
                             sin = -sin;
@@ -156,8 +156,8 @@ where
                             sin = -sin;
                         }
                     } else {
-                        slope_prev = Line::new(*p, pprev).slope();
-                        slope_next = Line::new(*p, pnext).slope();
+                        slope_prev = Line::new(p.0, pprev).slope();
+                        slope_next = Line::new(p.0, pnext).slope();
                         if clockwise {
                             if *slope <= slope_prev {
                                 cos = -cos;
@@ -192,8 +192,8 @@ where
                             sin = -sin;
                         }
                     } else {
-                        slope_prev = Line::new(*p, pprev).slope();
-                        slope_next = Line::new(*p, pnext).slope();
+                        slope_prev = Line::new(p.0, pprev).slope();
+                        slope_next = Line::new(p.0, pnext).slope();
                         if clockwise {
                             if *slope <= slope_prev {
                                 sin = -sin;
@@ -208,7 +208,7 @@ where
                     }
                 } else if pprev.y <= p.y() && pnext.y <= p.y() {
                     if *slope > T::zero() {
-                        slope_next = Line::new(*p, pnext).slope();
+                        slope_next = Line::new(p.0, pnext).slope();
                         if *slope >= slope_next {
                             cos = -cos;
                             sin = -sin;
@@ -246,12 +246,12 @@ where
     } else {
         // Slope is 0, things are fairly simple
         sin = T::zero();
-        if pnext.x() > p.x() {
+        if pnext.x > p.x() {
             cos = T::one();
-        } else if pnext.x() < p.x() {
+        } else if pnext.x < p.x() {
             cos = -T::one();
-        } else if pnext.x() == p.x() {
-            if pprev.x() < p.x() {
+        } else if pnext.x == p.x() {
+            if pprev.x < p.x() {
                 cos = T::one();
             } else {
                 cos = -T::one();
@@ -274,7 +274,7 @@ where
     let slope = if vertical || p.y() == u.y() {
         T::zero()
     } else {
-        Line::new(*p, *u).slope()
+        Line::new(p.0, u.0).slope()
     };
     let upx;
     let upy;
@@ -322,7 +322,7 @@ where
     let hundred = T::from(100).unwrap();
     let pnext = poly.exterior.0[next_vertex(poly, idx)];
     let pprev = poly.exterior.0[prev_vertex(poly, idx)];
-    let clockwise = pprev.cross_prod(p, &pnext) < T::zero();
+    let clockwise = pprev.cross_prod(&p.0, &pnext) < T::zero();
     let punit;
     if !vertical {
         punit = unitvector(m, poly, p, idx);
@@ -346,7 +346,7 @@ where
     } else if p.x() > pprev.x {
         punit = Point::new(p.x(), p.y() + hundred);
     } else if p.x() == pprev.x {
-        if p.y() > pprev.y() {
+        if p.y() > pprev.y {
             punit = Point::new(p.x(), p.y() + hundred);
         } else {
             // implies p.y() < pprev.y()
@@ -359,8 +359,8 @@ where
         // implies p.x() < pprev.x()
         punit = Point::new(p.x(), p.y() - hundred);
     }
-    let triarea = triangle_area(p, &punit, &pnext);
-    let edgelen = p.euclidean_distance(&pnext);
+    let triarea = triangle_area(p, &punit, &Point(pnext));
+    let edgelen = p.euclidean_distance(&Point(pnext));
     let mut sine = triarea / (T::from(0.5).unwrap() * T::from(100).unwrap() * edgelen);
     if sine < -T::one() || sine > T::one() {
         sine = T::one();
@@ -368,7 +368,7 @@ where
     let angle;
     let perpunit = unitpvector(p, &punit);
     let mut obtuse = false;
-    let left = leftturn(p, &perpunit, &pnext);
+    let left = leftturn(p, &perpunit, &Point(pnext));
     if clockwise {
         if left == 0 {
             obtuse = true;
@@ -466,14 +466,14 @@ where
     if (state.ap1 - minangle).abs() < T::from(0.002).unwrap() {
         state.ip1 = true;
         let p1next = next_vertex(state.poly1, &state.p1_idx);
-        state.p1next = state.poly1.exterior.0[p1next];
+        state.p1next = Point(state.poly1.exterior.0[p1next]);
         state.p1_idx = p1next;
         state.alignment = Some(Aligned::EdgeVertexP);
     }
     if (state.aq2 - minangle).abs() < T::from(0.002).unwrap() {
         state.iq2 = true;
         let q2next = next_vertex(state.poly2, &state.q2_idx);
-        state.q2next = state.poly2.exterior.0[q2next];
+        state.q2next = Point(state.poly2.exterior.0[q2next]);
         state.q2_idx = q2next;
         state.alignment = match state.alignment {
             None => Some(Aligned::EdgeVertexQ),
@@ -489,7 +489,7 @@ where
             }
             false => {
                 state.vertical = false;
-                state.slope = Line::new(state.p1next, state.p1).slope();
+                state.slope = Line::new(state.p1next.0, state.p1.0).slope();
             }
         }
     }
@@ -502,7 +502,7 @@ where
             }
             false => {
                 state.vertical = false;
-                state.slope = Line::new(state.q2next, state.q2).slope();
+                state.slope = Line::new(state.q2next.0, state.q2.0).slope();
             }
         }
     }

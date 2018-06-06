@@ -30,7 +30,7 @@ impl<T> HaversineLength<T> for Line<T>
     where T: Float + FromPrimitive
 {
     fn haversine_length(&self) -> T {
-        let (start, end) = self.to_points();
+        let (start, end) = self.points();
         start.haversine_distance(&end)
     }
 }

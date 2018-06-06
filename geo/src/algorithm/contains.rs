@@ -60,12 +60,12 @@ where
             return true;
         }
         for line in self.lines() {
-            if ((line.start.y() == line.end.y()) && (line.start.y() == p.y())
-                && (p.x() > line.start.x().min(line.end.x()))
-                && (p.x() < line.start.x().max(line.end.x())))
-                || ((line.start.x() == line.end.x()) && (line.start.x() == p.x())
-                    && (p.y() > line.start.y().min(line.end.y()))
-                    && (p.y() < line.start.y().max(line.end.y())))
+            if ((line.start.y == line.end.y) && (line.start.y == p.y())
+                && (p.x() > line.start.x.min(line.end.x))
+                && (p.x() < line.start.x.max(line.end.x)))
+                || ((line.start.x == line.end.x) && (line.start.x == p.x())
+                    && (p.y() > line.start.y.min(line.end.y))
+                    && (p.y() < line.start.y.max(line.end.y)))
             {
                 return true;
             }
@@ -88,7 +88,7 @@ where
     T: Float,
 {
     fn contains(&self, line: &Line<T>) -> bool {
-        self.contains(&line.start) & self.contains(&line.end)
+        self.contains(&line.start_point()) && self.contains(&line.end_point())
     }
 }
 
@@ -97,7 +97,7 @@ where
     T: Float,
 {
     fn contains(&self, linestring: &LineString<T>) -> bool {
-        linestring.0.iter().all(|pt| self.contains(pt))
+        linestring.points().all(|pt| self.contains(pt))
     }
 }
 
@@ -106,7 +106,7 @@ where
     T: Float,
 {
     fn contains(&self, line: &Line<T>) -> bool {
-        let (p0, p1) = (line.start, line.end);
+        let (p0, p1) = line.points();
         let mut look_for: Option<Point<T>> = None;
         for segment in self.lines() {
             if look_for.is_none() {
@@ -167,9 +167,9 @@ where
         if p.y() > line.start.y.min(line.end.y) && p.y() <= line.start.y.max(line.end.y)
             && p.x() <= line.start.x.max(line.end.x)
         {
-            if line.start.y() != line.end.y {
+            if line.start.y != line.end.y {
                 xints = (p.y() - line.start.y) * (line.end.x - line.start.x)
-                    / (line.end.y - line.start.y) + line.start.x();
+                    / (line.end.y - line.start.y) + line.start.x;
             }
             if (line.start.x == line.end.x) || (p.x() <= xints) {
                 crossings += 1;
@@ -213,7 +213,7 @@ where
     fn contains(&self, line: &Line<T>) -> bool {
         // both endpoints are contained in the polygon and the line
         // does NOT intersect the exterior or any of the interior boundaries
-        self.contains(&line.start) && self.contains(&line.end) && !self.exterior.intersects(line)
+        self.contains(&line.start_point()) && self.contains(&line.end_point()) && !self.exterior.intersects(line)
             && !self.interiors.iter().any(|inner| inner.intersects(line))
     }
 }
@@ -234,7 +234,7 @@ where
 {
     fn contains(&self, linestring: &LineString<T>) -> bool {
         // All LineString points must be inside the Polygon
-        if linestring.points().all(|point| self.contains(point)) {
+        if linestring.points().all(|point| self.contains(&point)) {
             // The Polygon interior is allowed to intersect with the LineString
             // but the Polygon's rings are not
             !self.interiors
@@ -327,7 +327,7 @@ mod test {
     #[test]
     // LineString is fully contained
     fn linestring_fully_contained_in_polygon() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
+        let p = |x, y| Coordinate { x: x, y: y };
         let poly = Polygon::new(
             LineString(vec![p(0., 0.), p(5., 0.), p(5., 6.), p(0., 6.), p(0., 0.)]),
             vec![],
@@ -343,13 +343,13 @@ mod test {
     }
     #[test]
     fn linestring_point_is_vertex_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
+        let p = |x, y| Coordinate { x: x, y: y };
         let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.)]);
         assert!(linestring.contains(&p(2., 2.)));
     }
     #[test]
     fn linestring_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
+        let p = |x, y| Coordinate { x: x, y: y };
         let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.)]);
         assert!(linestring.contains(&p(1., 0.)));
     }
@@ -362,19 +362,19 @@ mod test {
     }
     #[test]
     fn polygon_with_one_point_test() {
-        let linestring = LineString(vec![Point::new(2., 1.)]);
+        let linestring = LineString::from(vec![(2., 1.)]);
         let poly = Polygon::new(linestring, Vec::new());
         assert!(!poly.contains(&Point::new(3., 1.)));
     }
     #[test]
     fn polygon_with_one_point_is_vertex_test() {
-        let linestring = LineString(vec![Point::new(2., 1.)]);
+        let linestring = LineStringi::from(vec![(2., 1.)]);
         let poly = Polygon::new(linestring, Vec::new());
         assert!(!poly.contains(&Point::new(2., 1.)));
     }
     #[test]
     fn polygon_with_point_on_boundary_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
+        let p = |x, y| Coordinate { x: x, y: y };
         let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.), p(0., 2.), p(0., 0.)]);
         let poly = Polygon::new(linestring, Vec::new());
         assert!(!poly.contains(&p(1., 0.)));

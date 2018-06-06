@@ -1,5 +1,5 @@
 use num_traits::{Float, FromPrimitive};
-use ::{Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon};
+use ::{Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Coordinate};
 use algorithm::centroid::Centroid;
 use algorithm::map_coords::MapCoords;
 

@@ -182,9 +182,9 @@ mod test {
         let c = Point::new(1., 2.);
 
         // That triangle, but in clockwise ordering
-        let cw_line = LineString(vec![a, c, b, a].clone());
+        let cw_line = LineString::from(vec![a.0, c.0, b.0, a.0]);
         // That triangle, but in counterclockwise ordering
-        let ccw_line = LineString(vec![a, b, c, a].clone());
+        let ccw_line = LineString::from(vec![a.0, b.0, c.0, a.0]);
 
         assert_eq!(cw_line.winding_order(), Some(WindingOrder::Clockwise));
         assert_eq!(cw_line.is_cw(), true);

@@ -73,6 +73,13 @@ where
     /// ```txt
     /// line.dy() / line.dx()
     /// ```
+    ///
+    /// Note that:
+    ///
+    /// ```txt
+    /// Line::new(a, b).slope() ==
+    ///     Line::new(b, a).slope()
+    /// ```
     pub fn slope(&self) -> T {
         self.dy() / self.dx()
     }
@@ -84,6 +91,13 @@ where
     /// ```txt
     /// line.start.x() * line.end.y() -
     ///     line.start.y() * line.end.x()
+    /// ```
+    ///
+    /// Note that:
+    ///
+    /// ```txt
+    /// Line::new(a, b).determinant() ==
+    ///     -Line::new(b, a).determinant()
     /// ```
     ///
     /// [determinant]: https://en.wikipedia.org/wiki/Determinant

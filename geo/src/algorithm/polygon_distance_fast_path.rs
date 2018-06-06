@@ -327,10 +327,10 @@ where
     if !vertical {
         punit = unitvector(m, poly, p, idx);
     } else if clockwise {
-        if p.x() > pprev.x() {
+        if p.x() > pprev.x {
             punit = Point::new(p.x(), p.y() - hundred);
-        } else if p.x() == pprev.x() {
-            if p.y() > pprev.y() {
+        } else if p.x() == pprev.x {
+            if p.y() > pprev.y {
                 punit = Point::new(p.x(), p.y() + hundred);
             } else {
                 // implies p.y() < pprev.y()
@@ -343,9 +343,9 @@ where
             // implies p.x() < pprev.x()
             punit = Point::new(p.x(), p.y() + hundred);
         }
-    } else if p.x() > pprev.x() {
+    } else if p.x() > pprev.x {
         punit = Point::new(p.x(), p.y() + hundred);
-    } else if p.x() == pprev.x() {
+    } else if p.x() == pprev.x {
         if p.y() > pprev.y() {
             punit = Point::new(p.x(), p.y() + hundred);
         } else {
@@ -400,9 +400,9 @@ fn triangle_area<T>(a: &Point<T>, b: &Point<T>, c: &Point<T>) -> T
 where
     T: Float,
 {
-    (Line::new(*a, *b).determinant()
-        + Line::new(*b, *c).determinant()
-        + Line::new(*c, *a).determinant()) / (T::one() + T::one())
+    (Line::new(a.0, b.0).determinant()
+        + Line::new(b.0, c.0).determinant()
+        + Line::new(c.0, a.0).determinant()) / (T::one() + T::one())
 }
 
 /// Does abc turn left?

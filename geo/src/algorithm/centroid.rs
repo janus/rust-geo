@@ -252,7 +252,7 @@ mod test {
     fn polygon_one_point_test() {
         let p = Point(Coordinate { x: 2., y: 1. });
         let v = Vec::new();
-        let linestring = LineString(vec![p]);
+        let linestring = LineString(vec![p.0]);
         let poly = Polygon::new(linestring, v);
         assert_eq!(poly.centroid(), Some(p));
     }
@@ -285,7 +285,7 @@ mod test {
             (5.0, 1.3),
         ]);
 
-        let s3 = LineString::from(vec![
+        let ls3 = LineString::from(vec![
             (5., 2.3),
             (5.5, 3.0),
             (6., 2.3),
@@ -299,13 +299,13 @@ mod test {
     #[test]
     fn flat_polygon_test() {
         let poly = Polygon::new(LineString(vec![
-            Coordinate { x: 0., y: 1 },
-            Coordinate { x: 1., y: 1 },
-            Coordinate { x: 0., y: 1 },
+            Coordinate { x: 0., y: 1. },
+            Coordinate { x: 1., y: 1. },
+            Coordinate { x: 0., y: 1. },
         ]), vec![]);
         assert_eq!(
             poly.centroid(),
-            Some(p(0.5))
+            Some(Point::new(0.5, 1.))
         );
     }
     #[test]
@@ -352,14 +352,14 @@ mod test {
     }
     #[test]
     fn multipolygon_one_polygon_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
+        let p = |x, y| Coordinate { x: x, y: y };
         let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.), p(0., 2.), p(0., 0.)]);
         let poly = Polygon::new(linestring, Vec::new());
         assert_eq!(MultiPolygon(vec![poly]).centroid(), Some(p(1., 1.)));
     }
     #[test]
     fn multipolygon_two_polygons_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
+        let p = |x, y| Coordinate { x: x, y: y };
         let linestring = LineString(vec![p(2., 1.), p(5., 1.), p(5., 3.), p(2., 3.), p(2., 1.)]);
         let poly1 = Polygon::new(linestring, Vec::new());
         let linestring = LineString(vec![p(7., 1.), p(8., 1.), p(8., 2.), p(7., 2.), p(7., 1.)]);
@@ -367,7 +367,7 @@ mod test {
         let dist = MultiPolygon(vec![poly1, poly2])
             .centroid()
             .unwrap()
-            .euclidean_distance(&p(4.07142857142857, 1.92857142857143));
+            .euclidean_distance(&Point(p(4.07142857142857, 1.92857142857143)));
         assert!(dist < COORD_PRECISION);
     }
     #[test]

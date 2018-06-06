@@ -149,7 +149,7 @@ where
                             sin = -sin;
                         }
                     }
-                } else if pprev.y() <= p.y() && pnext.y() <= p.y() {
+                } else if pprev.y <= p.y() && pnext.y <= p.y() {
                     if *slope > T::zero() {
                         if !clockwise {
                             cos = -cos;
@@ -183,9 +183,9 @@ where
             } else if *slope < T::zero() {
                 sin = -sin;
             }
-        } else if pnext.x() < p.x() {
-            if pprev.x() < p.x() {
-                if pprev.y() >= p.y() && pnext.y() >= p.y() {
+        } else if pnext.x < p.x() {
+            if pprev.x < p.x() {
+                if pprev.y >= p.y() && pnext.y >= p.y() {
                     if *slope > T::zero() {
                         if clockwise {
                             cos = -cos;
@@ -206,7 +206,7 @@ where
                             sin = -sin;
                         }
                     }
-                } else if pprev.y() <= p.y() && pnext.y() <= p.y() {
+                } else if pprev.y <= p.y() && pnext.y <= p.y() {
                     if *slope > T::zero() {
                         slope_next = Line::new(*p, pnext).slope();
                         if *slope >= slope_next {
@@ -235,7 +235,7 @@ where
                     sin = -sin;
                 }
             }
-        } else if pprev.x() > p.x() {
+        } else if pprev.x > p.x() {
             cos = -cos;
             if *slope > T::zero() {
                 sin = -sin;

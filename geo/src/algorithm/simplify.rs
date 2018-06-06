@@ -19,7 +19,7 @@ where
 }
 
 // Ramer–Douglas-Peucker line simplification algorithm
-fn rdp<T>(points: &[Coordinate<T>], epsilon: &T) -> Vec<Point<T>>
+fn rdp<T>(points: &[Point<T>], epsilon: &T) -> Vec<Point<T>>
 where
     T: Float,
 {

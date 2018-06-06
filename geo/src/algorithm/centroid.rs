@@ -258,11 +258,11 @@ mod test {
     }
     #[test]
     fn polygon_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
+        let c = |x, y| Coordinate { x: x, y: y };
         let v = Vec::new();
-        let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.), p(0., 2.), p(0., 0.)]);
+        let linestring = LineString(vec![c(0., 0.), c(2., 0.), c(2., 2.), c(0., 2.), c(0., 0.)]);
         let poly = Polygon::new(linestring, v);
-        assert_eq!(poly.centroid(), Some(p(1., 1.)));
+        assert_eq!(poly.centroid(), Some(Point::new(1., 1.)));
     }
     #[test]
     fn polygon_hole_test() {
@@ -299,9 +299,9 @@ mod test {
     #[test]
     fn flat_polygon_test() {
         let poly = Polygon::new(LineString(vec![
-            Coordinante { x: 0., y: 1 },
-            Coordinante { x: 1., y: 1 },
-            Coordinante { x: 0., y: 1 },
+            Coordinate { x: 0., y: 1 },
+            Coordinate { x: 1., y: 1 },
+            Coordinate { x: 0., y: 1 },
         ]), vec![]);
         assert_eq!(
             poly.centroid(),
@@ -310,22 +310,39 @@ mod test {
     }
     #[test]
     fn polygon_flat_interior_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let poly = Polygon::new(LineString(vec![p(0., 0.), p(0., 1.), p(1., 1.), p(1., 0.), p(0., 0.)]), 
-                    vec![LineString(vec![p(0., 0.), p(0., 1.), p(0., 0.)])]);
+        let poly = Polygon::new(
+            LineString::from(vec![
+                (0., 0.),
+                (0., 1.),
+                (1., 1.),
+                (1., 0.),
+                (0., 0.),
+            ]),
+            vec![LineString::from(vec![
+                (0., 0.),
+                (0., 1.),
+                (0., 0.),
+            ]
+        )]);
         assert_eq!(
             poly.centroid(),
-            Some(p(0.5, 0.5))
+            Some(Point::new(0.5, 0.5))
         );
     }
     #[test]
     fn empty_interior_polygon_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let poly = Polygon::new(LineString(vec![p(0., 0.), p(0., 1.), p(1., 1.), p(1., 0.), p(0., 0.)]), 
-                    vec![LineString(vec![])]);
+        let poly = Polygon::new(
+            LineString::from(vec![
+                (0., 0.),
+                (0., 1.),
+                (1., 1.),
+                (1., 0.),
+                (0., 0.),
+            ]),
+            vec![LineString(vec![])]);
         assert_eq!(
             poly.centroid(),
-            Some(p(0.5, 0.5))
+            Point::new(0.5, 0.5),
         );
     }
     // Tests: Centroid of MultiPolygon
@@ -355,18 +372,17 @@ mod test {
     }
     #[test]
     fn multipolygon_two_polygons_of_opposite_clockwise_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.), p(0., 2.), p(0., 0.)]);
+        let linestring = LineString::from(vec![(0., 0.), (2., 0.), (2., 2.), (0., 2.), (0., 0.)]);
         let poly1 = Polygon::new(linestring, Vec::new());
-        let linestring = LineString(vec![
-            p(0., 0.),
-            p(-2., 0.),
-            p(-2., 2.),
-            p(0., 2.),
-            p(0., 0.),
+        let linestring = LineString::from(vec![
+            (0., 0.),
+            (-2., 0.),
+            (-2., 2.),
+            (0., 2.),
+            (0., 0.),
         ]);
         let poly2 = Polygon::new(linestring, Vec::new());
-        assert_eq!(MultiPolygon(vec![poly1, poly2]).centroid(), Some(p(0., 1.)));
+        assert_eq!(MultiPolygon(vec![poly1, poly2]).centroid(), Some(Point::new(0., 1.)));
     }
     #[test]
     fn bbox_test() {
@@ -381,8 +397,8 @@ mod test {
     }
     #[test]
     fn line_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let line1 = Line::new(p(0., 1.), p(1., 3.));
-        assert_eq!(line1.centroid(), p(0.5, 2.));
+        let c = |x, y| Coordinate { x: x, y: y };
+        let line1 = Line::new(c(0., 1.), c(1., 3.));
+        assert_eq!(line1.centroid(), Point::new(0.5, 2.));
     }
 }

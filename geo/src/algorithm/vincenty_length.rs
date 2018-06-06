@@ -23,7 +23,7 @@ impl<T> VincentyLength<T> for LineString<T>
     fn vincenty_length(&self) -> Result<T, FailedToConvergeError> {
         let mut length = T::zero();
         for line in self.lines() {
-            length = length + line.vincenty_length();
+            length = length + line.vincenty_length()?;
         }
         Ok(length)
     }

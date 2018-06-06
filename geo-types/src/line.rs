@@ -92,6 +92,15 @@ where
     }
 }
 
+impl<T: CoordinateType> From<[(T, T); 2]> for Line<T> {
+    fn from(coord: [(T, T); 2]) -> Line<T> {
+        Line::new(
+            coord[0].into(),
+            coord[1].into(),
+        )
+    }
+}
+
 #[cfg(feature = "spade")]
 impl<T> ::spade::SpatialObject for Line<T>
 where

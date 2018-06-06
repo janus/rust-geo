@@ -167,39 +167,26 @@ mod tests {
     closest!(in_line_far_away, (1000.0, 1000.0) => Closest::SinglePoint(Point::new(100.0, 100.0)));
     closest!(perpendicular_from_50_50, (0.0, 100.0) => Closest::SinglePoint(Point::new(50.0, 50.0)));
 
-    fn collect_points<F, P, C>(points: &[P]) -> C
-    where
-        F: Float,
-        P: Into<Point<F>> + Clone,
-        C: ::std::iter::FromIterator<Point<F>>,
-    {
-        points.iter().map(|p| p.clone().into()).collect()
-    }
-
     fn a_square(width: f32) -> LineString<f32> {
-        let points = vec![
+        LineString::from(vec![
             (0.0, 0.0),
             (width, 0.0),
             (width, width),
             (0.0, width),
             (0.0, 0.0),
-        ];
-
-        collect_points(&points)
+        ])
     }
 
     /// A bunch of "random" points.
     fn random_looking_points() -> Vec<Point<f32>> {
-        let points = vec![
+        vec![
             (0.0, 0.0),
             (100.0, 100.0),
             (1000.0, 1000.0),
             (100.0, 0.0),
             (50.0, 50.0),
             (1234.567, -987.6543),
-        ];
-
-        collect_points(&points)
+        ].into_iter().map(Point::new).collect()
     }
 
     /// Throw a bunch of random points at two `ClosestPoint` implementations
@@ -241,8 +228,8 @@ mod tests {
 
     #[test]
     fn line_string_with_single_element_behaves_like_line() {
-        let points = vec![(0.0, 0.0), (100.0, 100.0)];
-        let line_string: LineString<f32> = collect_points(&points);
+        let coords = vec![(0.0, 0.0), (100.0, 100.0)];
+        let line_string: LineString<f32> = LineString::from(coords);
         let line = Line::new(points[0].into(), points[1].into());
 
         fuzz_two_impls(line, line_string);

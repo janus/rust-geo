@@ -517,28 +517,28 @@ mod test {
     }
     #[test]
     fn point_in_line_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let p0 = p(2., 4.);
+        let c = |x, y| Coordinate { x: x, y: y };
+        let p0 = c(2., 4.);
         // vertical line
-        let line1 = Line::new(p(2., 0.), p(2., 5.));
+        let line1 = Line::new(c(2., 0.), c(2., 5.));
         // point on line, but outside line segment
-        let line2 = Line::new(p(0., 6.), p(1.5, 4.5));
+        let line2 = Line::new(c(0., 6.), c(1.5, 4.5));
         // point on line
-        let line3 = Line::new(p(0., 6.), p(3., 3.));
+        let line3 = Line::new(c(0., 6.), c(3., 3.));
         assert!(line1.contains(&p0));
         assert!(!line2.contains(&p0));
         assert!(line3.contains(&p0));
     }
     #[test]
     fn line_in_line_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let line0 = Line::new(p(0., 1.), p(3., 4.));
+        let c = |x, y| Coordinate { x: x, y: y };
+        let line0 = Line::new(c(0., 1.), c(3., 4.));
         // first point on line0, second not
-        let line1 = Line::new(p(1., 2.), p(2., 2.));
+        let line1 = Line::new(c(1., 2.), c(2., 2.));
         // co-linear, but extends past the end of line0
-        let line2 = Line::new(p(1., 2.), p(4., 5.));
+        let line2 = Line::new(c(1., 2.), c(4., 5.));
         // contained in line0
-        let line3 = Line::new(p(1., 2.), p(3., 4.));
+        let line3 = Line::new(c(1., 2.), c(3., 4.));
         assert!(!line0.contains(&line1));
         assert!(!line0.contains(&line2));
         assert!(line0.contains(&line3));
@@ -562,17 +562,17 @@ mod test {
     }
     #[test]
     fn line_in_polygon_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let line = Line::new(p(0., 1.), p(3., 4.));
+        let c = |x, y| Coordinate { x: x, y: y };
+        let line = Line::new(c(0., 1.), c(3., 4.));
         let linestring0 = LineString(vec![
-            p(-1., 0.),
-            p(5., 0.),
-            p(5., 5.),
-            p(0., 5.),
-            p(-1., 0.),
+            c(-1., 0.),
+            c(5., 0.),
+            c(5., 5.),
+            c(0., 5.),
+            c(-1., 0.),
         ]);
         let poly0 = Polygon::new(linestring0, Vec::new());
-        let linestring1 = LineString(vec![p(0., 0.), p(0., 2.), p(2., 2.), p(2., 0.), p(0., 0.)]);
+        let linestring1 = LineString(vec![c(0., 0.), c(0., 2.), c(2., 2.), c(2., 0.), c(0., 0.)]);
         let poly1 = Polygon::new(linestring1, Vec::new());
         assert!(poly0.contains(&line));
         assert!(!poly1.contains(&line));

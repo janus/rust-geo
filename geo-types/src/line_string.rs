@@ -72,8 +72,12 @@ where
     T: CoordinateType;
 
 impl<T: CoordinateType> LineString<T> {
-    pub fn points<'a>(&'a self) -> impl Iterator<Item = Point<T>> + 'a {
+    pub fn points_iter<'a>(&'a self) -> impl Iterator<Item = Point<T>> + 'a {
         self.0.iter().map(|coord| Point(*coord))
+    }
+
+    pub fn into_points(self) -> Vec<Point<T>> {
+        self.0.into_iter().map(Point).collect()
     }
 
     /// Return an `Line` iterator that yields one `Line` for each line segment

@@ -516,7 +516,7 @@ where
             geomtype: GeomType::Line,
         };
         let mut simplified = vwp_wrapper(&gt, self, None, epsilon);
-        LineString(simplified.pop().unwrap())
+        LineString::from(simplified.pop().unwrap())
     }
 }
 
@@ -570,7 +570,7 @@ where
     T: Float,
 {
     fn simplifyvw(&self, epsilon: &T) -> LineString<T> {
-        LineString::from(visvalingam(&self.0, epsilon))
+        LineString::from(visvalingam(&self.clone().into_points(), epsilon))
     }
 }
 

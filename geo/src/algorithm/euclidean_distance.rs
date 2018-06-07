@@ -102,7 +102,7 @@ where
 {
     /// Minimum distance between two Points
     fn euclidean_distance(&self, p: &Point<T>) -> T {
-        Line::new(*self, *p).euclidean_length()
+        Line::new(self.0, p.0).euclidean_length()
     }
 }
 
@@ -151,7 +151,7 @@ where
                 polygon
                     .exterior
                     .lines()
-                    .map(|line| line_segment_distance(self, &line.start, &line.end))
+                    .map(|line| line_segment_distance(self, &line.start_point(), &line.end_point()))
                     .fold(T::max_value(), |accum, val| accum.min(val)),
             )
     }
@@ -226,7 +226,7 @@ where
         }
         linestring
             .lines()
-            .map(|line| line_segment_distance(self, &line.start, &line.end))
+            .map(|line| line_segment_distance(self, &line.start_point(), &line.end_point()))
             .fold(T::max_value(), |accum, val| accum.min(val))
     }
 }
@@ -319,7 +319,7 @@ where
     fn euclidean_distance(&self, other: &Polygon<T>) -> T {
         if self.intersects(other) || other.contains(self) {
             T::zero()
-        } else if !other.interiors.is_empty() && ring_contains_point(other, &self.0[0]) {
+        } else if !other.interiors.is_empty() && ring_contains_point(other, &Point(self.0[0])) {
             // check each ring distance, returning the minimum
             let mut mindist: T = Float::max_value();
             for ring in &other.interiors {
@@ -376,9 +376,9 @@ where
             return T::zero();
         }
         // minimum of two Point-Line distances
-        self.start
+        self.start_point()
             .euclidean_distance(other)
-            .min(self.end.euclidean_distance(other))
+            .min(self.end_point().euclidean_distance(other))
     }
 }
 
@@ -392,8 +392,8 @@ where
             return T::zero();
         }
         // point-line distance between each exterior polygon point and the line
-        let exterior_min = other.exterior.points().fold(T::max_value(), |acc, point| {
-            acc.min(self.euclidean_distance(point))
+        let exterior_min = other.exterior.points_iter().fold(T::max_value(), |acc, point| {
+            acc.min(self.euclidean_distance(&point))
         });
         // point-line distance between each interior ring point and the line
         // if there are no rings this just evaluates to max_float
@@ -523,7 +523,7 @@ mod test {
             (6., 1.),
             (5., 1.),
         ];
-        let ls = LineString(points.iter().map(|e| Point::new(e.0, e.1)).collect());
+        let ls = LineString::from(points);
         let poly = Polygon::new(ls, vec![]);
         // A Random point outside the octagon
         let p = Point::new(2.5, 0.5);
@@ -545,7 +545,7 @@ mod test {
             (6., 1.),
             (5., 1.),
         ];
-        let ls = LineString(points.iter().map(|e| Point::new(e.0, e.1)).collect());
+        let ls = LineString::from(points);
         let poly = Polygon::new(ls, vec![]);
         // A Random point inside the octagon
         let p = Point::new(5.5, 2.1);
@@ -567,7 +567,7 @@ mod test {
             (6., 1.),
             (5., 1.),
         ];
-        let ls = LineString(points.iter().map(|e| Point::new(e.0, e.1)).collect());
+        let ls = LineString::from(points);
         let poly = Polygon::new(ls, vec![]);
         // A point on the octagon
         let p = Point::new(5.0, 1.0);
@@ -577,12 +577,12 @@ mod test {
     #[test]
     // Point to Polygon, on boundary
     fn point_polygon_boundary_test2() {
-        let exterior = LineString(vec![
-            Point::new(0., 0.),
-            Point::new(0., 0.0004),
-            Point::new(0.0004, 0.0004),
-            Point::new(0.0004, 0.),
-            Point::new(0., 0.),
+        let exterior = LineString::from(vec![
+            (0., 0.),
+            (0., 0.0004),
+            (0.0004, 0.0004),
+            (0.0004, 0.),
+            (0., 0.),
         ]);
 
         let poly = Polygon::new(exterior.clone(), vec![]);
@@ -633,27 +633,27 @@ mod test {
         // checks that the distance from the multipolygon
         // is equal to the distance from the closest polygon
         // taken in isolation, whatever that distance is
-        let ls1 = LineString(vec![
-            Point::new(0.0,  0.0),
-            Point::new(10.0, 0.0),
-            Point::new(10.0, 10.0),
-            Point::new(5.0,  15.0),
-            Point::new(0.0,  10.0),
-            Point::new(0.0,  0.0),
+        let ls1 = LineString::from(vec![
+            (0.0,  0.0),
+            (10.0, 0.0),
+            (10.0, 10.0),
+            (5.0,  15.0),
+            (0.0,  10.0),
+            (0.0,  0.0),
         ]);
-        let ls2 = LineString(vec![
-            Point::new(0.0,  30.0),
-            Point::new(0.0,  25.0),
-            Point::new(10.0, 25.0),
-            Point::new(10.0, 30.0),
-            Point::new(0.0,  30.0),
+        let ls2 = LineString::from(vec![
+            (0.0,  30.0),
+            (0.0,  25.0),
+            (10.0, 25.0),
+            (10.0, 30.0),
+            (0.0,  30.0),
         ]);
-        let ls3 = LineString(vec![
-            Point::new(15.0, 30.0),
-            Point::new(15.0, 25.0),
-            Point::new(20.0, 25.0),
-            Point::new(20.0, 30.0),
-            Point::new(15.0, 30.0),
+        let ls3 = LineString::from(vec![
+            (15.0, 30.0),
+            (15.0, 25.0),
+            (20.0, 25.0),
+            (20.0, 30.0),
+            (15.0, 30.0),
         ]);
         let pol1 = Polygon::new(ls1, vec![]);
         let pol2 = Polygon::new(ls2, vec![]);
@@ -665,7 +665,7 @@ mod test {
         ]);
         let pnt1 = Point::new(0.0,  15.0);
         let pnt2 = Point::new(10.0, 20.0);
-        let ln   = Line::new(pnt1, pnt2);
+        let ln   = Line::new(pnt1.0, pnt2.0);
         let dist_mp_ln   = ln.euclidean_distance(&mp);
         let dist_pol1_ln = ln.euclidean_distance(&pol1);
         assert_relative_eq!(dist_mp_ln, dist_pol1_ln);
@@ -673,17 +673,17 @@ mod test {
 
     #[test]
     fn point_distance_multipolygon_test() {
-        let ls1 = LineString(vec![
-            Point::new(0.0, 0.0),
-            Point::new(1.0, 10.0),
-            Point::new(2.0, 0.0),
-            Point::new(0.0, 0.0),
+        let ls1 = LineString::from(vec![
+            (0.0, 0.0),
+            (1.0, 10.0),
+            (2.0, 0.0),
+            (0.0, 0.0),
         ]);
-        let ls2 = LineString(vec![
-            Point::new(3.0, 0.0),
-            Point::new(4.0, 10.0),
-            Point::new(5.0, 0.0),
-            Point::new(3.0, 0.0),
+        let ls2 = LineString::from(vec![
+            (3.0, 0.0),
+            (4.0, 10.0),
+            (5.0, 0.0),
+            (3.0, 0.0),
         ]);
         let p1 = Polygon::new(ls1, vec![]);
         let p2 = Polygon::new(ls2, vec![]);
@@ -751,11 +751,14 @@ mod test {
     }
     #[test]
     fn distance_multilinestring_test() {
-        let v1 = LineString(vec![Point::new(0.0, 0.0), Point::new(1.0, 10.0)]);
-        let v2 = LineString(vec![
-            Point::new(1.0, 10.0),
-            Point::new(2.0, 0.0),
-            Point::new(3.0, 1.0),
+        let v1 = LineString::from(vec![
+            (0.0, 0.0),
+            (1.0, 10.0)
+        ]);
+        let v2 = LineString::from(vec![
+            (1.0, 10.0),
+            (2.0, 0.0),
+            (3.0, 1.0),
         ]);
         let mls = MultiLineString(vec![v1, v2]);
         let p = Point::new(50.0, 50.0);
@@ -792,7 +795,7 @@ mod test {
     }
     #[test]
     fn distance_line_test() {
-        let line0 = Line::new(Point::new(0., 0.), Point::new(5., 0.));
+        let line0 = Line::from([(0., 0.), (5., 0.)]);
         let p0 = Point::new(2., 3.);
         let p1 = Point::new(3., 0.);
         let p2 = Point::new(6., 0.);
@@ -822,7 +825,7 @@ mod test {
             .iter()
             .map(|e| Point::new(e.0, e.1))
             .collect::<Vec<_>>();
-        let poly1 = Polygon::new(LineString(points), vec![]);
+        let poly1 = Polygon::new(LineString::from(points), vec![]);
 
         let points_raw_2 = vec![
             (188., 231.),
@@ -837,7 +840,7 @@ mod test {
             .iter()
             .map(|e| Point::new(e.0, e.1))
             .collect::<Vec<_>>();
-        let poly2 = Polygon::new(LineString(points2), vec![]);
+        let poly2 = Polygon::new(LineString::from(points2), vec![]);
         let dist = min_poly_dist(&poly1.convex_hull(), &poly2.convex_hull());
         let dist2 = nearest_neighbour_distance(&poly1.exterior, &poly2.exterior);
         assert_eq!(dist, 21.0);
@@ -857,7 +860,7 @@ mod test {
             .iter()
             .map(|e| Point::new(e.0, e.1))
             .collect::<Vec<_>>();
-        let poly1 = Polygon::new(LineString(points), vec![]);
+        let poly1 = Polygon::new(LineString::from(points), vec![]);
 
         let points_raw_2 = vec![
             (242., 186.),
@@ -870,7 +873,7 @@ mod test {
             .iter()
             .map(|e| Point::new(e.0, e.1))
             .collect::<Vec<_>>();
-        let poly2 = Polygon::new(LineString(points2), vec![]);
+        let poly2 = Polygon::new(LineString::from(points2), vec![]);
         let dist = min_poly_dist(&poly1.convex_hull(), &poly2.convex_hull());
         let dist2 = nearest_neighbour_distance(&poly1.exterior, &poly2.exterior);
         assert_eq!(dist, 29.274562336608895);
@@ -890,7 +893,7 @@ mod test {
             .iter()
             .map(|e| Point::new(e.0, e.1))
             .collect::<Vec<_>>();
-        let poly1 = Polygon::new(LineString(points), vec![]);
+        let poly1 = Polygon::new(LineString::from(points), vec![]);
 
         let points_raw_2 = vec![
             (232., 196.),
@@ -903,7 +906,7 @@ mod test {
             .iter()
             .map(|e| Point::new(e.0, e.1))
             .collect::<Vec<_>>();
-        let poly2 = Polygon::new(LineString(points2), vec![]);
+        let poly2 = Polygon::new(LineString::from(points2), vec![]);
         let dist = min_poly_dist(&poly1.convex_hull(), &poly2.convex_hull());
         let dist2 = nearest_neighbour_distance(&poly1.exterior, &poly2.exterior);
         assert_eq!(dist, 12.0);
@@ -913,7 +916,7 @@ mod test {
     fn test_large_polygon_distance() {
         let points = include!("test_fixtures/norway_main.rs");
         let points_ls: Vec<_> = points.iter().map(|e| Point::new(e[0], e[1])).collect();
-        let ls = LineString(points_ls);
+        let ls = LineString::from(points_ls);
         let poly1 = Polygon::new(ls, vec![]);
         let vec2 = vec![
             (4.921875, 66.33750501996518),
@@ -953,7 +956,7 @@ mod test {
     #[test]
     // Line-Polygon test: closest point on Polygon is NOT nearest to a Line end-point
     fn test_line_polygon_simple() {
-        let line = Line::new(Point::new(0.0, 0.0), Point::new(0.0, 3.0));
+        let line = Line::from([(0.0, 0.0), (0.0, 3.0)]);
         let v = vec![(5.0, 1.0), (5.0, 2.0), (0.25, 1.5), (5.0, 1.0)];
         let poly = Polygon::new(v.into(), vec![]);
         assert_eq!(line.euclidean_distance(&poly), 0.25);
@@ -961,7 +964,7 @@ mod test {
     #[test]
     // Line-Polygon test: Line intersects Polygon
     fn test_line_polygon_intersects() {
-        let line = Line::new(Point::new(0.5, 0.0), Point::new(0.0, 3.0));
+        let line = Line::from([(0.5, 0.0), (0.0, 3.0)]);
         let v = vec![(5.0, 1.0), (5.0, 2.0), (0.25, 1.5), (5.0, 1.0)];
         let poly = Polygon::new(v.into(), vec![]);
         assert_eq!(line.euclidean_distance(&poly), 0.0);
@@ -969,7 +972,7 @@ mod test {
     #[test]
     // Line-Polygon test: Line contained by interior ring
     fn test_line_polygon_inside_ring() {
-        let line = Line::new(Point::new(4.4, 1.5), Point::new(4.45, 1.5));
+        let line = Line::from([(4.4, 1.5), (4.45, 1.5)]);
         let v = vec![(5.0, 1.0), (5.0, 2.0), (0.25, 1.0), (5.0, 1.0)];
         let v2 = vec![(4.5, 1.2), (4.5, 1.8), (3.5, 1.2), (4.5, 1.2)];
         let poly = Polygon::new(v.into(), vec![v2.into()]);
@@ -978,7 +981,7 @@ mod test {
     #[test]
     // LineString-Line test
     fn test_linestring_line_distance() {
-        let line = Line::new(Point::new(0.0, 0.0), Point::new(0.0, 2.0));
+        let line = Line::new([(0.0, 0.0), (0.0, 2.0)]);
         let ls: LineString<_> = vec![(3.0, 0.0), (1.0, 1.0), (3.0, 2.0)].into();
         assert_eq!(ls.euclidean_distance(&line), 1.0);
     }

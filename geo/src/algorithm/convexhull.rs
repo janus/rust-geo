@@ -107,7 +107,7 @@ where
     let mut furthest_idx = 0;
     for (idx, point) in set.iter().enumerate() {
         // let current_distance = pseudo_distance(p_a, p_b, point);
-        let current_distance = point.euclidean_distance(&Line::from([*p_a, *p_b]));
+        let current_distance = point.euclidean_distance(&Line::new(p_a.0, p_b.0));
         if current_distance > furthest_distance {
             furthest_distance = current_distance;
             furthest_idx = idx
@@ -158,7 +158,7 @@ where
     T: Float,
 {
     fn convex_hull(&self) -> Polygon<T> {
-        Polygon::new(LineString(quick_hull(&mut self.exterior.0.clone())), vec![])
+        Polygon::new(LineString::from(quick_hull(&mut self.exterior.0.clone())), vec![])
     }
 }
 
@@ -169,9 +169,9 @@ where
     fn convex_hull(&self) -> Polygon<T> {
         let mut aggregated: Vec<Point<T>> = self.0
             .iter()
-            .flat_map(|elem| elem.exterior.0.iter().cloned())
+            .flat_map(|elem| elem.exterior.0.iter().map(|c| Point(*c)))
             .collect();
-        Polygon::new(LineString(quick_hull(&mut aggregated)), vec![])
+        Polygon::new(LineString::from(quick_hull(&mut aggregated)), vec![])
     }
 }
 
@@ -180,7 +180,7 @@ where
     T: Float,
 {
     fn convex_hull(&self) -> Polygon<T> {
-        Polygon::new(LineString(quick_hull(&mut self.0.clone())), vec![])
+        Polygon::new(LineString::from(quick_hull(&mut self.0.clone())), vec![])
     }
 }
 
@@ -193,7 +193,7 @@ where
             .iter()
             .flat_map(|elem| elem.0.iter().cloned())
             .collect();
-        Polygon::new(LineString(quick_hull(&mut aggregated)), vec![])
+        Polygon::new(LineString::from(quick_hull(&mut aggregated)), vec![])
     }
 }
 
@@ -202,7 +202,7 @@ where
     T: Float,
 {
     fn convex_hull(&self) -> Polygon<T> {
-        Polygon::new(LineString(quick_hull(&mut self.0.clone())), vec![])
+        Polygon::new(LineString::from(quick_hull(&mut self.0.clone())), vec![])
     }
 }
 

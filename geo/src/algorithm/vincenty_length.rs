@@ -12,7 +12,7 @@ impl<T> VincentyLength<T> for Line<T>
 {
     /// The units of the returned value is meters.
     fn vincenty_length(&self) -> Result<T, FailedToConvergeError> {
-        let (start, end) = self.to_points();
+        let (start, end) = self.points();
         start.vincenty_distance(&end)
     }
 }

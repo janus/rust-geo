@@ -15,7 +15,7 @@ where
     let mut distance: T;
 
     for (i, _) in points.iter().enumerate().take(points.len() - 1).skip(1) {
-        distance = points[i].euclidean_distance(&Line::new(points[0], *points.last().unwrap()));
+        distance = points[i].euclidean_distance(&Line::new(points[0].0, points.last().unwrap().0));
         if distance > dmax {
             index = i;
             dmax = distance;
@@ -74,7 +74,7 @@ where
     T: Float,
 {
     fn simplify(&self, epsilon: &T) -> LineString<T> {
-        LineString(rdp(&self.0, epsilon))
+        LineString::from(rdp(&self.0.iter().map(Point::from).collect(), epsilon))
     }
 }
 

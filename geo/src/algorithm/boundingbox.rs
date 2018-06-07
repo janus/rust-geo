@@ -76,7 +76,7 @@ where
     /// Return the BoundingBox for a MultiPoint
     ///
     fn bbox(&self) -> Self::Output {
-        get_bbox(&self.0.iter().map(|p| p.0))
+        get_bbox(&self.0.iter().map(|p| *p.0))
     }
 }
 

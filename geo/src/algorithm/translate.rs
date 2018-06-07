@@ -44,7 +44,7 @@ impl<T, G> Translate<T> for G
 
 #[cfg(test)]
 mod test {
-  use ::{LineString, Point, Polygon};
+  use ::{LineString, Point, Polygon, Coordinate};
   use super::*;
   #[test]
   fn test_translate_point() {
@@ -101,7 +101,7 @@ mod test {
       LineString(
         correct_outside
           .iter()
-          .map(|e| Point::new(e.0, e.1))
+          .map(|e| Coordinate { x: e.0, y: e.1 })
           .collect::<Vec<_>>(),
       ),
       vec![],

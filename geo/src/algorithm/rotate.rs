@@ -111,7 +111,7 @@ where
     /// Rotate the Point about itself by the given number of degrees
     /// This operation leaves the point coordinates unchanged
     fn rotate(&self, angle: T) -> Self {
-        rotation_matrix(angle, &self.centroid(), &[*self])[0]
+        Point(rotation_matrix(angle, &self.centroid(), &[*self])[0])
     }
 }
 
@@ -122,7 +122,7 @@ where
     fn rotate(&self, angle: T) -> Self {
         let pts = vec![Point(self.start), Point(self.end)];
         let rotated = rotation_matrix(angle, &self.centroid(), &pts);
-        Line::new(rotated[0].0, rotated[1].0)
+        Line::new(rotated[0], rotated[1])
     }
 }
 
@@ -132,7 +132,7 @@ where
 {
     /// Rotate the LineString about its centroid by the given number of degrees
     fn rotate(&self, angle: T) -> Self {
-        LineString(rotation_matrix(angle, &self.centroid().unwrap(), &self.0))
+        LineString(rotation_matrix(angle, &self.centroid().unwrap(), &self.clone().into_points()))
     }
 }
 
@@ -149,10 +149,10 @@ where
             self.exterior.centroid().unwrap()
         };
         Polygon::new(
-            LineString(rotation_matrix(angle, &centroid, &self.exterior.0)),
+            LineString(rotation_matrix(angle, &centroid, &self.exterior.clone().into_points())),
             self.interiors
                 .iter()
-                .map(|ring| LineString(rotation_matrix(angle, &centroid, &ring.0)))
+                .map(|ring| LineString(rotation_matrix(angle, &centroid, &ring.clone().into_points())))
                 .collect(),
         )
     }
@@ -212,7 +212,7 @@ mod test {
         correct.push(Point::new(-2.0710678118654755, 5.0));
         correct.push(Point::new(5.0, 5.0));
         correct.push(Point::new(12.071067811865476, 5.0));
-        let correct_ls = LineString(correct);
+        let correct_ls = LineString::from(correct);
         // results agree with Shapely / GEOS
         assert_eq!(rotated, correct_ls);
     }
@@ -246,7 +246,7 @@ mod test {
             LineString(
                 correct_outside
                     .iter()
-                    .map(|e| Point::new(e.0, e.1))
+                    .map(|e| Coordinate::from((e.0, e.1)))
                     .collect::<Vec<_>>(),
             ),
             vec![],
@@ -256,30 +256,30 @@ mod test {
     }
     #[test]
     fn test_rotate_polygon_holes() {
-        let ls1 = LineString(vec![
-            Point::new(5.0, 1.0),
-            Point::new(4.0, 2.0),
-            Point::new(4.0, 3.0),
-            Point::new(5.0, 4.0),
-            Point::new(6.0, 4.0),
-            Point::new(7.0, 3.0),
-            Point::new(7.0, 2.0),
-            Point::new(6.0, 1.0),
-            Point::new(5.0, 1.0),
+        let ls1 = LineString::from(vec![
+            (5.0, 1.0),
+            (4.0, 2.0),
+            (4.0, 3.0),
+            (5.0, 4.0),
+            (6.0, 4.0),
+            (7.0, 3.0),
+            (7.0, 2.0),
+            (6.0, 1.0),
+            (5.0, 1.0),
         ]);
 
-        let ls2 = LineString(vec![
-            Point::new(5.0, 1.3),
-            Point::new(5.5, 2.0),
-            Point::new(6.0, 1.3),
-            Point::new(5.0, 1.3),
+        let ls2 = LineString::from(vec![
+            (5.0, 1.3),
+            (5.5, 2.0),
+            (6.0, 1.3),
+            (5.0, 1.3),
         ]);
 
-        let ls3 = LineString(vec![
-            Point::new(5., 2.3),
-            Point::new(5.5, 3.0),
-            Point::new(6., 2.3),
-            Point::new(5., 2.3),
+        let ls3 = LineString::from(vec![
+            (5., 2.3),
+            (5.5, 3.0),
+            (6., 2.3),
+            (5., 2.3),
         ]);
 
         let poly1 = Polygon::new(ls1, vec![ls2, ls3]);
@@ -317,17 +317,14 @@ mod test {
     }
     #[test]
     fn test_rotate_line() {
-        let line0 = Line::new(Point::new(0., 0.), Point::new(0., 2.));
-        let line1 = Line::new(Point::new(1., 0.9999999999999999), Point::new(-1., 1.));
+        let line0 = Line::from([(0., 0.), (0., 2.)]);
+        let line1 = Line::from([(1., 0.9999999999999999), (-1., 1.)]);
         assert_eq!(line0.rotate(90.), line1);
     }
     #[test]
     fn test_rotate_line_around_point() {
-        let line0 = Line::new(Point::new(0., 0.), Point::new(0., 2.));
-        let line1 = Line::new(
-            Point::new(0., 0.),
-            Point::new(-2., 0.00000000000000012246467991473532),
-        );
+        let line0 = Line::from([(0., 0.), (0., 2.)]);
+        let line1 = Line::from([(0., 0.), (-2., 0.00000000000000012246467991473532)]);,
         assert_eq!(line0.rotate_around_point(90., &Point::new(0., 0.)), line1);
     }
 }

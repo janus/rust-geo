@@ -17,14 +17,14 @@ fn up<T>(u: &Point<T>, v: &Point<T>) -> bool
 where
     T: Float,
 {
-    u.dot(v) > T::zero()
+    u.dot(v.0) > T::zero()
 }
 
 fn direction_sign<T>(u: &Point<T>, vi: &Point<T>, vj: &Point<T>) -> T
 where
     T: Float,
 {
-    u.dot(&(*vi - *vj))
+    u.dot(&(*vi - *vj).0)
 }
 
 // true if Vi is above Vj

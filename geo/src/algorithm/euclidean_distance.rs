@@ -434,14 +434,14 @@ where
             return T::zero();
         }
         // Containment check
-        if !self.interiors.is_empty() && ring_contains_point(self, &poly2.exterior.0[0]) {
+        if !self.interiors.is_empty() && ring_contains_point(self, &Point(poly2.exterior.0[0])) {
             // check each ring distance, returning the minimum
             let mut mindist: T = Float::max_value();
             for ring in &self.interiors {
                 mindist = mindist.min(nearest_neighbour_distance(&poly2.exterior, ring))
             }
             return mindist;
-        } else if !poly2.interiors.is_empty() && ring_contains_point(poly2, &self.exterior.0[0]) {
+        } else if !poly2.interiors.is_empty() && ring_contains_point(poly2, &Point(self.exterior.0[0])) {
             let mut mindist: T = Float::max_value();
             for ring in &poly2.interiors {
                 mindist = mindist.min(nearest_neighbour_distance(&self.exterior, ring))
@@ -467,14 +467,14 @@ where
     let tree_b: RTree<Line<_>> = RTree::bulk_load(geom2.lines().collect());
     // Return minimum distance between all geom a points and all geom b points
     geom2
-        .points()
+        .points_iter()
         .fold(T::max_value(), |acc, point| {
-            let nearest = tree_a.nearest_neighbor(point).unwrap();
-            acc.min(nearest.euclidean_distance(point))
+            let nearest = tree_a.nearest_neighbor(&point).unwrap();
+            acc.min(nearest.euclidean_distance(&point))
         })
-        .min(geom1.points().fold(T::max_value(), |acc, point| {
-            let nearest = tree_b.nearest_neighbor(point).unwrap();
-            acc.min(nearest.euclidean_distance(point))
+        .min(geom1.points_iter().fold(T::max_value(), |acc, point| {
+            let nearest = tree_b.nearest_neighbor(&point).unwrap();
+            acc.min(nearest.euclidean_distance(&point))
         }))
 }
 
@@ -618,8 +618,8 @@ mod test {
         ];
         // cut out a triangle inside octagon
         let int_points = vec![(3.5, 3.5), (4.4, 1.5), (2.6, 1.5), (3.5, 3.5)];
-        let ls_ext = LineString(ext_points.iter().map(|e| Point::new(e.0, e.1)).collect());
-        let ls_int = LineString(int_points.iter().map(|e| Point::new(e.0, e.1)).collect());
+        let ls_ext = LineString::from(ext_points);
+        let ls_int = LineString::from(int_points);
         let poly = Polygon::new(ls_ext, vec![ls_int]);
         // A point inside the cutout triangle
         let p = Point::new(3.5, 2.5);
@@ -705,7 +705,7 @@ mod test {
             (7., 2.),
             (6., 1.),
         ];
-        let ls = LineString(points.iter().map(|e| Point::new(e.0, e.1)).collect());
+        let ls = LineString::from(points);
         // A Random point "inside" the LineString
         let p = Point::new(5.5, 2.1);
         let dist = p.euclidean_distance(&ls);
@@ -725,7 +725,7 @@ mod test {
             (7., 2.),
             (6., 1.),
         ];
-        let ls = LineString(points.iter().map(|e| Point::new(e.0, e.1)).collect());
+        let ls = LineString::from(points);
         // A point which lies on the LineString
         let p = Point::new(5.0, 4.0);
         let dist = p.euclidean_distance(&ls);
@@ -735,7 +735,7 @@ mod test {
     // Point to LineString, closed triangle
     fn point_linestring_triangle_test() {
         let points = vec![(3.5, 3.5), (4.4, 2.0), (2.6, 2.0), (3.5, 3.5)];
-        let ls = LineString(points.iter().map(|e| Point::new(e.0, e.1)).collect());
+        let ls = LineString::from(points);
         let p = Point::new(3.5, 2.5);
         let dist = p.euclidean_distance(&ls);
         assert_relative_eq!(dist, 0.5);
@@ -981,7 +981,7 @@ mod test {
     #[test]
     // LineString-Line test
     fn test_linestring_line_distance() {
-        let line = Line::new([(0.0, 0.0), (0.0, 2.0)]);
+        let line = Line::from([(0.0, 0.0), (0.0, 2.0)]);
         let ls: LineString<_> = vec![(3.0, 0.0), (1.0, 1.0), (3.0, 2.0)].into();
         assert_eq!(ls.euclidean_distance(&line), 1.0);
     }

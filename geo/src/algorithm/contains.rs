@@ -53,10 +53,10 @@ where
         }
         // LineString with one point equal p
         if self.0.len() == 1 {
-            return self.0[0].contains(p);
+            return Point(self.0[0]).contains(p);
         }
         // check if point is a vertex
-        if self.0.contains(p) {
+        if self.0.contains(&p.0) {
             return true;
         }
         for line in self.lines() {
@@ -97,7 +97,7 @@ where
     T: Float,
 {
     fn contains(&self, linestring: &LineString<T>) -> bool {
-        linestring.points().all(|pt| self.contains(&pt))
+        linestring.points_iter().all(|pt| self.contains(&pt))
     }
 }
 
@@ -124,7 +124,7 @@ where
                 if segment.contains(&p) {
                     // If the segment contains the endpoint we are looking for we are done
                     return true;
-                } else if !line.contains(&segment.end) {
+                } else if !line.contains(&segment.end_point()) {
                     // If not, and the end of the segment is not on the line, we should stop
                     // looking
                     look_for = None
@@ -234,7 +234,7 @@ where
 {
     fn contains(&self, linestring: &LineString<T>) -> bool {
         // All LineString points must be inside the Polygon
-        if linestring.points().all(|point| self.contains(&point)) {
+        if linestring.points_iter().all(|point| self.contains(&point)) {
             // The Polygon interior is allowed to intersect with the LineString
             // but the Polygon's rings are not
             !self.interiors
@@ -466,35 +466,34 @@ mod test {
         let linestring = LineString::from(vec![(0., 0.), (2., 0.), (2., 2.), (0., 2.), (0., 0.)]);
         let poly = Polygon::new(linestring.clone(), Vec::new());
         assert!(!poly.contains(&linestring.clone()));
-        assert!(!poly.contains(&LineString::from(vec![(0., 0.), p(2., 0.)])));
-        assert!(!poly.contains(&LineString::from(vec![(2., 0.), p(2., 2.)])));
-        assert!(!poly.contains(&LineString::from(vec![(0., 2.), p(0., 0.)])));
+        assert!(!poly.contains(&LineString::from(vec![(0., 0.), (2., 0.)])));
+        assert!(!poly.contains(&LineString::from(vec![(2., 0.), (2., 2.)])));
+        assert!(!poly.contains(&LineString::from(vec![(0., 2.), (0., 0.)])));
     }
     #[test]
     fn linestring_outside_polygon_test() {
-        let p = |x, y| Point(Coordinate { x: x, y: y });
-        let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.), p(0., 2.), p(0., 0.)]);
+        let linestring = LineString::from(vec![(0., 0.), (2., 0.), (2., 2.), (0., 2.), (0., 0.)]);
         let poly = Polygon::new(linestring, Vec::new());
-        assert!(!poly.contains(&LineString(vec![p(1., 1.), p(3., 0.)])));
-        assert!(!poly.contains(&LineString(vec![p(3., 0.), p(5., 2.)])));
+        assert!(!poly.contains(&LineString::from(vec![(1., 1.), (3., 0.)])));
+        assert!(!poly.contains(&LineString::from(vec![(3., 0.), (5., 2.)])));
     }
     #[test]
     fn linestring_in_inner_polygon_test() {
         let p = |x, y| Point(Coordinate { x: x, y: y });
 
         let poly = Polygon::new(
-            LineString(vec![p(0., 0.), p(5., 0.), p(5., 6.), p(0., 6.), p(0., 0.)]),
-            vec![LineString(vec![
-                p(1., 1.),
-                p(4., 1.),
-                p(4., 4.),
-                p(1., 4.),
-                p(1., 1.),
+            LineString::from(vec![(0., 0.), (5., 0.), (5., 6.), (0., 6.), (0., 0.)]),
+            vec![LineString::from(vec![
+                (1., 1.),
+                (4., 1.),
+                (4., 4.),
+                (1., 4.),
+                (1., 1.),
             ])],
         );
-        assert!(!poly.contains(&LineString(vec![p(2., 2.), p(3., 3.)])));
-        assert!(!poly.contains(&LineString(vec![p(2., 2.), p(2., 5.)])));
-        assert!(!poly.contains(&LineString(vec![p(3., 0.5), p(3., 5.)])));
+        assert!(!poly.contains(&LineString::from(vec![(2., 2.), (3., 3.)])));
+        assert!(!poly.contains(&LineString::from(vec![(2., 2.), (2., 5.)])));
+        assert!(!poly.contains(&LineString::from(vec![(3., 0.5), (3., 5.)])));
     }
     #[test]
     fn bbox_in_inner_bbox_test() {
@@ -523,9 +522,9 @@ mod test {
         let line2 = Line::new(c(0., 6.), c(1.5, 4.5));
         // point on line
         let line3 = Line::new(c(0., 6.), c(3., 3.));
-        assert!(line1.contains(&p0));
-        assert!(!line2.contains(&p0));
-        assert!(line3.contains(&p0));
+        assert!(line1.contains(&Point(p0)));
+        assert!(!line2.contains(&Point(p0)));
+        assert!(line3.contains(&Point(p0)));
     }
     #[test]
     fn line_in_line_test() {
@@ -544,15 +543,15 @@ mod test {
     #[test]
     fn linestring_in_line_test() {
         let p = |x, y| Point(Coordinate { x: x, y: y });
-        let line = Line::new(p(0., 1.), p(3., 4.));
+        let line = Line::from([(0., 1.), (3., 4.)]);
         // linestring0 in line
-        let linestring0 = LineString(vec![p(0.1, 1.1), p(1., 2.), p(1.5, 2.5)]);
+        let linestring0 = LineString::from(vec![(0.1, 1.1), (1., 2.), (1.5, 2.5)]);
         // linestring1 starts and ends in line, but wanders in the middle
-        let linestring1 = LineString(vec![p(0.1, 1.1), p(2., 2.), p(1.5, 2.5)]);
+        let linestring1 = LineString::from(vec![(0.1, 1.1), (2., 2.), (1.5, 2.5)]);
         // linestring2 is co-linear, but extends beyond line
-        let linestring2 = LineString(vec![p(0.1, 1.1), p(1., 2.), p(4., 5.)]);
+        let linestring2 = LineString::from(vec![(0.1, 1.1), (1., 2.), (4., 5.)]);
         // no part of linestring3 is contained in line
-        let linestring3 = LineString(vec![p(1.1, 1.1), p(2., 2.), p(2.5, 2.5)]);
+        let linestring3 = LineString::from(vec![(1.1, 1.1), (2., 2.), (2.5, 2.5)]);
         assert!(line.contains(&linestring0));
         assert!(!line.contains(&linestring1));
         assert!(!line.contains(&linestring2));
@@ -577,29 +576,29 @@ mod test {
     }
     #[test]
     fn line_in_linestring_test() {
-        let line0 = Line::new(Point::new(1., 1.), Point::new(2., 2.));
+        let line0 = Line::from([(1., 1.), (2., 2.)]);
         // line0 is completely contained in the second segment
-        let linestring0 = LineString(vec![
-            Point::new(0., 0.5),
-            Point::new(0.5, 0.5),
-            Point::new(3., 3.),
+        let linestring0 = LineString::from(vec![
+            (0., 0.5),
+            (0.5, 0.5),
+            (3., 3.),
         ]);
         // line0 is contained in the last three segments
-        let linestring1 = LineString(vec![
-            Point::new(0., 0.5),
-            Point::new(0.5, 0.5),
-            Point::new(1.2, 1.2),
-            Point::new(1.5, 1.5),
-            Point::new(3., 3.),
+        let linestring1 = LineString::from(vec![
+            (0., 0.5),
+            (0.5, 0.5),
+            (1.2, 1.2),
+            (1.5, 1.5),
+            (3., 3.),
         ]);
         // line0 endpoints are contained in the linestring, but the fourth point is off the line
-        let linestring2 = LineString(vec![
-            Point::new(0., 0.5),
-            Point::new(0.5, 0.5),
-            Point::new(1.2, 1.2),
-            Point::new(1.5, 0.),
-            Point::new(2., 2.),
-            Point::new(3., 3.),
+        let linestring2 = LineString::from(vec![
+            (0., 0.5),
+            (0.5, 0.5),
+            (1.2, 1.2),
+            (1.5, 0.),
+            (2., 2.),
+            (3., 3.),
         ]);
         assert!(linestring0.contains(&line0));
         assert!(linestring1.contains(&line0));

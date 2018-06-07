@@ -74,7 +74,9 @@ where
     T: Float,
 {
     fn simplify(&self, epsilon: &T) -> LineString<T> {
-        LineString::from(rdp(&self.0.iter().map(Point::from).collect(), epsilon))
+        LineString::from(
+            rdp(&self.clone().into_points(), epsilon)
+        )
     }
 }
 

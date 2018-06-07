@@ -65,15 +65,33 @@ use {Coordinate, CoordinateType, Line, Point};
 /// }
 /// ```
 ///
+// TODO: don't expose this within the module
 #[derive(PartialEq, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct LineString<T>(pub Vec<Coordinate<T>>)
 where
     T: CoordinateType;
 
+// TODO: implement all relevantn traits
+pub struct PointsIter<'a, T: CoordinateType + 'a>(&'a LineString<T>);
+
+impl<'a, T: CoordinateType> Iterator for PointsIter<'a, T> {
+    type Item = Point<T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        unimplemented!()
+    }
+}
+
+impl<'a, T: CoordinateType> DoubleEndedIterator for PointsIter<'a, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        unimplemented!()
+    }
+}
+
 impl<T: CoordinateType> LineString<T> {
-    pub fn points_iter<'a>(&'a self) -> impl Iterator<Item = Point<T>> + 'a {
-        self.0.iter().map(|coord| Point(*coord))
+    pub fn points_iter(&self) -> PointsIter<T> {
+        PointsIter(self)
     }
 
     pub fn into_points(self) -> Vec<Point<T>> {

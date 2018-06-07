@@ -32,7 +32,7 @@ pub use multi_point::MultiPoint;
 mod line;
 pub use line::Line;
 
-mod line_string;
+pub mod line_string;
 pub use line_string::LineString;
 
 mod multi_line_string;

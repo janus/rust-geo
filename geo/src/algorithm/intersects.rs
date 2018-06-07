@@ -184,7 +184,7 @@ where
             true
         } else {
             // or if it's contained in the polygon
-            linestring.points().any(|point| self.contains(&point))
+            linestring.points_iter().any(|point| self.contains(&point))
         }
     }
 }
@@ -600,10 +600,10 @@ mod test {
     }
     #[test]
     fn line_intersects_line_test() {
-        let line0 = Line::new([(0., 0.), (3., 4.)]);
-        let line1 = Line::new([(2., 0.), (2., 5.)]);
-        let line2 = Line::new([(0., 7.), (5., 4.)]);
-        let line3 = Line::new([(0., 0.), (-3., -4.)]);
+        let line0 = Line::from([(0., 0.), (3., 4.)]);
+        let line1 = Line::from([(2., 0.), (2., 5.)]);
+        let line2 = Line::from([(0., 7.), (5., 4.)]);
+        let line3 = Line::from([(0., 0.), (-3., -4.)]);
         assert!(line0.intersects(&line0));
         assert!(line0.intersects(&line1));
         assert!(!line0.intersects(&line2));

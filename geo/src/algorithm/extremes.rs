@@ -17,7 +17,7 @@ fn up<T>(u: &Point<T>, v: &Point<T>) -> bool
 where
     T: Float,
 {
-    u.dot(v.0) > T::zero()
+    u.dot(&v.0) > T::zero()
 }
 
 fn direction_sign<T>(u: &Point<T>, vi: &Point<T>, vj: &Point<T>) -> T

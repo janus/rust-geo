@@ -324,7 +324,7 @@ mod test {
     #[test]
     fn test_rotate_line_around_point() {
         let line0 = Line::from([(0., 0.), (0., 2.)]);
-        let line1 = Line::from([(0., 0.), (-2., 0.00000000000000012246467991473532)]);,
+        let line1 = Line::from([(0., 0.), (-2., 0.00000000000000012246467991473532)]);
         assert_eq!(line0.rotate_around_point(90., &Point::new(0., 0.)), line1);
     }
 }

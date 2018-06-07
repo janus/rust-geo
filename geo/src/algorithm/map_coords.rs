@@ -128,16 +128,21 @@ impl<T: CoordinateType, NT: CoordinateType> TryMapCoords<T, NT> for Line<T> {
         func: &Fn(&(T, T)) -> Result<(NT, NT), Error>,
     ) -> Result<Self::Output, Error> {
         Ok(Line::new(
-            self.start_point().try_map_coords(func)?,
-            self.end_point().try_map_coords(func)?,
+            self.start_point().try_map_coords(func)?.0,
+            self.end_point().try_map_coords(func)?.0,
         ))
     }
 }
 
 impl<T: CoordinateType> MapCoordsInplace<T> for Line<T> {
     fn map_coords_inplace(&mut self, func: &Fn(&(T, T)) -> (T, T)) {
-        self.start_point().map_coords_inplace(func);
-        self.end_point().map_coords_inplace(func);
+        let new_start = func(&(self.start.x, self.start.y));
+        self.start.x = new_start.0;
+        self.start.y = new_start.1;
+
+        let new_end = func(&(self.end.x, self.end.y));
+        self.end.x = new_end.0;
+        self.end.y = new_end.1;
     }
 }
 
@@ -145,7 +150,7 @@ impl<T: CoordinateType, NT: CoordinateType> MapCoords<T, NT> for LineString<T> {
     type Output = LineString<NT>;
 
     fn map_coords(&self, func: &Fn(&(T, T)) -> (NT, NT)) -> Self::Output {
-        LineString(self.points_iter().map(|p| p.map_coords(func)).collect())
+        LineString::from(self.points_iter().map(|p| p.map_coords(func)).collect())
     }
 }
 
@@ -166,7 +171,9 @@ impl<T: CoordinateType, NT: CoordinateType> TryMapCoords<T, NT> for LineString<T
 impl<T: CoordinateType> MapCoordsInplace<T> for LineString<T> {
     fn map_coords_inplace(&mut self, func: &Fn(&(T, T)) -> (T, T)) {
         for p in &mut self.0 {
-            p.map_coords_inplace(func);
+            let new_coords = func(&(p.x, p.y));
+            p.x = new_coords.0;
+            p.y = new_coords.1;
         }
     }
 }

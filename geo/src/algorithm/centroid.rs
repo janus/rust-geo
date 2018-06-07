@@ -213,7 +213,7 @@ mod test {
     // Tests: Centroid of LineString
     #[test]
     fn empty_linestring_test() {
-        let linestring = LineString::from(vec![]);
+        let linestring = LineString::<f32>::from(vec![]);
         let centroid = linestring.centroid();
         assert!(centroid.is_none());
     }

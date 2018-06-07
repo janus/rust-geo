@@ -42,10 +42,10 @@ where
     }
 }
 
-fn get_bbox<'a, I, T>(collection: I) -> Option<Bbox<T>>
+fn get_bbox<I, T>(collection: I) -> Option<Bbox<T>>
 where
-    T: 'a + CoordinateType,
-    I: 'a + IntoIterator<Item = &'a Coordinate<T>>
+    T: CoordinateType,
+    I: IntoIterator<Item = Coordinate<T>>
 {
     let mut iter = collection.into_iter();
     if let Some(pnt) = iter.next() {
@@ -76,7 +76,7 @@ where
     /// Return the BoundingBox for a MultiPoint
     ///
     fn bbox(&self) -> Self::Output {
-        get_bbox(&self.0.iter().map(|p| p.0))
+        get_bbox(self.0.iter().map(|p| p.0))
     }
 }
 
@@ -118,7 +118,7 @@ where
     /// Return the BoundingBox for a LineString
     ///
     fn bbox(&self) -> Self::Output {
-        get_bbox(&self.0)
+        get_bbox(self.0.iter().cloned())
     }
 }
 
@@ -132,7 +132,7 @@ where
     /// Return the BoundingBox for a MultiLineString
     ///
     fn bbox(&self) -> Self::Output {
-        get_bbox(self.0.iter().flat_map(|line| line.0.iter()))
+        get_bbox(self.0.iter().flat_map(|line| line.0.iter().map(|c| *c)))
     }
 }
 
@@ -147,7 +147,7 @@ where
     ///
     fn bbox(&self) -> Self::Output {
         let line = &self.exterior;
-        get_bbox(&line.0)
+        get_bbox(line.0.iter().cloned())
     }
 }
 
@@ -161,7 +161,7 @@ where
     /// Return the BoundingBox for a MultiPolygon
     ///
     fn bbox(&self) -> Self::Output {
-        get_bbox(self.0.iter().flat_map(|poly| (poly.exterior).0.iter()))
+        get_bbox(self.0.iter().flat_map(|poly| (poly.exterior).0.iter().map(|c| *c)))
     }
 }
 

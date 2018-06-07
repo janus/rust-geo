@@ -150,7 +150,7 @@ impl<T: CoordinateType, NT: CoordinateType> MapCoords<T, NT> for LineString<T> {
     type Output = LineString<NT>;
 
     fn map_coords(&self, func: &Fn(&(T, T)) -> (NT, NT)) -> Self::Output {
-        LineString::from(self.points_iter().map(|p| p.map_coords(func)).collect())
+        LineString::from(self.points_iter().map(|p| p.map_coords(func)).collect::<Vec<_>>())
     }
 }
 

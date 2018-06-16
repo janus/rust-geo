@@ -33,10 +33,13 @@ where
     /// assert_eq!(line.start, Coordinate { x: 0., y: 0. });
     /// assert_eq!(line.end, Coordinate { x: 1., y: 2. });
     /// ```
-    pub fn new(start: Coordinate<T>, end: Coordinate<T>) -> Line<T> {
+    pub fn new<C>(start: C, end: C) -> Line<T>
+    where
+        C: Into<Coordinate<T>>,
+    {
         Line {
-            start,
-            end
+            start: start.into(),
+            end: end.into(),
         }
     }
 
@@ -172,10 +175,7 @@ where
 
 impl<T: CoordinateType> From<[(T, T); 2]> for Line<T> {
     fn from(coord: [(T, T); 2]) -> Line<T> {
-        Line::new(
-            coord[0].into(),
-            coord[1].into(),
-        )
+        Line::new(coord[0], coord[1])
     }
 }
 

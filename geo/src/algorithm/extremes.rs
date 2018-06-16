@@ -77,11 +77,7 @@ where
     let mut max: usize = 0;
     for (i, _) in vertices.iter().enumerate() {
         // if vertices[i] is above prior vertices[max]
-<<<<<<< HEAD
-        if above(u, &Point(vertices[i]), &Point(vertices[max])) {
-=======
         if above(u, vertices[i], vertices[max]) {
->>>>>>> origin/master
             max = i;
         }
     }
@@ -189,11 +185,6 @@ mod test {
     #[test]
     fn test_polygon_extreme_x() {
         // a diamond shape
-<<<<<<< HEAD
-        let coords = vec![(1.0, 0.0), (2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)];
-        let poly1 = Polygon::new(LineString::from(coords), vec![]);
-        let min_x = polymax_naive_indices(&Point::new(-1., 0.), &poly1).unwrap();
-=======
         let points_raw = vec![(1.0, 0.0), (2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)];
         let points = points_raw
             .iter()
@@ -201,7 +192,6 @@ mod test {
             .collect::<Vec<_>>();
         let poly1 = Polygon::new(LineString(points), vec![]);
         let min_x = polymax_naive_indices(Point::new(-1., 0.), &poly1).unwrap();
->>>>>>> origin/master
         let correct = 3_usize;
         assert_eq!(min_x, correct);
     }

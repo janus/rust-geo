@@ -107,7 +107,7 @@ where
     let mut furthest_idx = 0;
     for (idx, point) in set.iter().enumerate() {
         // let current_distance = pseudo_distance(p_a, p_b, point);
-        let current_distance = point.euclidean_distance(&Line::new(p_a, p_b));
+        let current_distance = point.euclidean_distance(&Line::new(p_a.0, p_b.0));
         if current_distance > furthest_distance {
             furthest_distance = current_distance;
             furthest_idx = idx

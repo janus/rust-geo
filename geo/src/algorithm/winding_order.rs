@@ -1,5 +1,4 @@
 use std::iter::Rev;
-use std::slice::Iter;
 use {CoordinateType, LineString, Point};
 use geo_types::line_string::PointsIter;
 

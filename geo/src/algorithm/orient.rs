@@ -86,7 +86,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use ::{LineString, Point, Polygon};
+    use ::{LineString, Polygon};
     use super::*;
     #[test]
     fn test_polygon_orientation() {

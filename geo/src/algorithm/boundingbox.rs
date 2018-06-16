@@ -1,4 +1,4 @@
-use ::{CoordinateType, Coordinate, Bbox, Point, MultiPoint, Line, LineString, MultiLineString, Polygon, MultiPolygon};
+use ::{CoordinateType, Coordinate, Bbox, MultiPoint, Line, LineString, MultiLineString, Polygon, MultiPolygon};
 
 /// Calculation of the bounding box of a geometry.
 

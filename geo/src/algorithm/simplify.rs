@@ -1,5 +1,5 @@
 use num_traits::Float;
-use ::{LineString, MultiLineString, MultiPolygon, Point, Polygon, Line, Coordinate};
+use ::{LineString, MultiLineString, MultiPolygon, Point, Polygon, Line};
 use algorithm::euclidean_distance::EuclideanDistance;
 
 // Ramer–Douglas-Peucker line simplification algorithm

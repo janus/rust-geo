@@ -2,9 +2,7 @@ use num_traits::{Float, FromPrimitive};
 use ::{Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Coordinate};
 use algorithm::centroid::Centroid;
 use algorithm::map_coords::MapCoords;
-use num_traits::{Float, FromPrimitive};
 use std::iter::Sum;
-use {Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon};
 
 // rotate a slice of points "angle" degrees about an origin
 // origin can be an arbitrary point, pass &Point::new(0., 0.)
@@ -114,7 +112,7 @@ where
     /// Rotate the Point about itself by the given number of degrees
     /// This operation leaves the point coordinates unchanged
     fn rotate(&self, angle: T) -> Self {
-        Point(rotation_matrix(angle, &self.centroid(), &[*self])[0])
+        Point(rotation_matrix(angle, self.centroid(), &[*self])[0])
     }
 }
 

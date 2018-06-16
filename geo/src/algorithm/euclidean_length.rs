@@ -60,7 +60,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use ::{Coordinate, Line, LineString, MultiLineString, Point};
+    use ::{Coordinate, Line, LineString, MultiLineString};
     use algorithm::euclidean_length::EuclideanLength;
 
     #[test]

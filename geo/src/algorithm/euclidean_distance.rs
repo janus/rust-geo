@@ -151,7 +151,7 @@ where
                 polygon
                     .exterior
                     .lines()
-                    .map(|line| line_segment_distance(*self, line.start, line.end))
+                    .map(|line| line_segment_distance(*self, line.start_point(), line.end_point()))
                     .fold(T::max_value(), |accum, val| accum.min(val)),
             )
     }
@@ -226,11 +226,7 @@ where
         }
         linestring
             .lines()
-<<<<<<< HEAD
-            .map(|line| line_segment_distance(self, &line.start_point(), &line.end_point()))
-=======
-            .map(|line| line_segment_distance(*self, line.start, line.end))
->>>>>>> origin/master
+            .map(|line| line_segment_distance(*self, line.start_point(), line.end()))
             .fold(T::max_value(), |accum, val| accum.min(val))
     }
 }
@@ -251,11 +247,7 @@ where
 {
     /// Minimum distance from a Line to a Point
     fn euclidean_distance(&self, point: &Point<T>) -> T {
-<<<<<<< HEAD
-        line_segment_distance(point, &self.start.into(), &self.end.into())
-=======
         line_segment_distance(*point, self.start, self.end)
->>>>>>> origin/master
     }
 }
 
@@ -327,11 +319,7 @@ where
     fn euclidean_distance(&self, other: &Polygon<T>) -> T {
         if self.intersects(other) || other.contains(self) {
             T::zero()
-<<<<<<< HEAD
-        } else if !other.interiors.is_empty() && ring_contains_point(other, &Point(self.0[0])) {
-=======
         } else if !other.interiors.is_empty() && ring_contains_point(other, self.0[0]) {
->>>>>>> origin/master
             // check each ring distance, returning the minimum
             let mut mindist: T = Float::max_value();
             for ring in &other.interiors {
@@ -446,22 +434,14 @@ where
             return T::zero();
         }
         // Containment check
-<<<<<<< HEAD
         if !self.interiors.is_empty() && ring_contains_point(self, &Point(poly2.exterior.0[0])) {
-=======
-        if !self.interiors.is_empty() && ring_contains_point(self, poly2.exterior.0[0]) {
->>>>>>> origin/master
             // check each ring distance, returning the minimum
             let mut mindist: T = Float::max_value();
             for ring in &self.interiors {
                 mindist = mindist.min(nearest_neighbour_distance(&poly2.exterior, ring))
             }
             return mindist;
-<<<<<<< HEAD
-        } else if !poly2.interiors.is_empty() && ring_contains_point(poly2, &Point(self.exterior.0[0])) {
-=======
         } else if !poly2.interiors.is_empty() && ring_contains_point(poly2, self.exterior.0[0]) {
->>>>>>> origin/master
             let mut mindist: T = Float::max_value();
             for ring in &poly2.interiors {
                 mindist = mindist.min(nearest_neighbour_distance(&self.exterior, ring))

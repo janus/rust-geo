@@ -49,7 +49,7 @@ where
     ///
     /// assert_eq!(cross, 2.0)
     /// ```
-    pub fn cross_prod(&self, coord_b: &Coordinate<T>, coord_c: &Coordinate<T>) -> T {
+    pub fn cross_prod(&self, coord_b: Coordinate<T>, coord_c: Coordinate<T>) -> T {
         (coord_b.x - self.x) * (coord_c.y - self.y)
             - (coord_b.y - self.y) * (coord_c.x - self.x)
     }

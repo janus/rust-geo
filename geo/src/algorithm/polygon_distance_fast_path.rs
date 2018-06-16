@@ -54,15 +54,15 @@ where
 }
 
 /// Minimum distance between a vertex and an imaginary line drawn from p to q
-fn vertex_line_distance<T>(v: &Point<T>, p: &Point<T>, q: &Point<T>) -> T
+fn vertex_line_distance<T>(v: Point<T>, p: Point<T>, q: Point<T>) -> T
 where
     T: Float,
 {
-    v.euclidean_distance(&Line::new(p.0, q.0))
+    v.euclidean_distance(&Line::new(p, q))
 }
 
 /// Wrap-around previous Polygon index
-fn prev_vertex<T>(poly: &Polygon<T>, current_vertex: &usize) -> usize
+fn prev_vertex<T>(poly: &Polygon<T>, current_vertex: usize) -> usize
 where
     T: Float,
 {
@@ -70,7 +70,7 @@ where
 }
 
 /// Wrap-around next Polygon index
-fn next_vertex<T>(poly: &Polygon<T>, current_vertex: &usize) -> usize
+fn next_vertex<T>(poly: &Polygon<T>, current_vertex: usize) -> usize
 where
     T: Float,
 {
@@ -117,7 +117,7 @@ where
 
 // much of the following code is ported from Java, copyright 1999 Hormoz Pirzadeh, available at:
 // http://web.archive.org/web/20150330010154/http://cgm.cs.mcgill.ca/%7Eorm/rotcal.html
-fn unitvector<T>(slope: &T, poly: &Polygon<T>, p: &Point<T>, idx: &usize) -> Point<T>
+fn unitvector<T>(slope: &T, poly: &Polygon<T>, p: Point<T>, idx: usize) -> Point<T>
 where
     T: Float + Signed,
 {
@@ -128,7 +128,11 @@ where
     let mut sin;
     let pnext = poly.exterior.0[next_vertex(poly, idx)];
     let pprev = poly.exterior.0[prev_vertex(poly, idx)];
+<<<<<<< HEAD
     let clockwise = pprev.cross_prod(&p.0, &pnext) < T::zero();
+=======
+    let clockwise = pprev.cross_prod(p, pnext) < T::zero();
+>>>>>>> origin/master
     let slope_prev;
     let slope_next;
     // Slope isn't 0, things are complicated
@@ -139,7 +143,11 @@ where
             if pprev.x > p.x() {
                 if pprev.y >= p.y() && pnext.y >= p.y() {
                     if *slope > T::zero() {
+<<<<<<< HEAD
                         slope_prev = Line::new(p.0, pprev).slope();
+=======
+                        slope_prev = Line::new(p, pprev).slope();
+>>>>>>> origin/master
                         if clockwise && *slope <= slope_prev || !clockwise && *slope >= slope_prev {
                             cos = -cos;
                             sin = -sin;
@@ -156,8 +164,13 @@ where
                             sin = -sin;
                         }
                     } else {
+<<<<<<< HEAD
                         slope_prev = Line::new(p.0, pprev).slope();
                         slope_next = Line::new(p.0, pnext).slope();
+=======
+                        slope_prev = Line::new(p, pprev).slope();
+                        slope_next = Line::new(p, pnext).slope();
+>>>>>>> origin/master
                         if clockwise {
                             if *slope <= slope_prev {
                                 cos = -cos;
@@ -192,8 +205,13 @@ where
                             sin = -sin;
                         }
                     } else {
+<<<<<<< HEAD
                         slope_prev = Line::new(p.0, pprev).slope();
                         slope_next = Line::new(p.0, pnext).slope();
+=======
+                        slope_prev = Line::new(p, pprev).slope();
+                        slope_next = Line::new(p, pnext).slope();
+>>>>>>> origin/master
                         if clockwise {
                             if *slope <= slope_prev {
                                 sin = -sin;
@@ -208,7 +226,11 @@ where
                     }
                 } else if pprev.y <= p.y() && pnext.y <= p.y() {
                     if *slope > T::zero() {
+<<<<<<< HEAD
                         slope_next = Line::new(p.0, pnext).slope();
+=======
+                        slope_next = Line::new(p, pnext).slope();
+>>>>>>> origin/master
                         if *slope >= slope_next {
                             cos = -cos;
                             sin = -sin;
@@ -265,7 +287,7 @@ where
 }
 
 /// Perpendicular unit vector of a vertex and a unit vector
-fn unitpvector<T>(p: &Point<T>, u: &Point<T>) -> Point<T>
+fn unitpvector<T>(p: Point<T>, u: Point<T>) -> Point<T>
 where
     T: Float,
 {
@@ -274,7 +296,11 @@ where
     let slope = if vertical || p.y() == u.y() {
         T::zero()
     } else {
+<<<<<<< HEAD
         Line::new(p.0, u.0).slope()
+=======
+        Line::new(p, u).slope()
+>>>>>>> origin/master
     };
     let upx;
     let upy;
@@ -315,14 +341,18 @@ where
 }
 
 /// Angle between a vertex and an edge
-fn vertex_line_angle<T>(poly: &Polygon<T>, p: &Point<T>, m: &T, vertical: bool, idx: &usize) -> T
+fn vertex_line_angle<T>(poly: &Polygon<T>, p: Point<T>, m: &T, vertical: bool, idx: usize) -> T
 where
     T: Float + FloatConst + Signed,
 {
     let hundred = T::from(100).unwrap();
     let pnext = poly.exterior.0[next_vertex(poly, idx)];
     let pprev = poly.exterior.0[prev_vertex(poly, idx)];
+<<<<<<< HEAD
     let clockwise = pprev.cross_prod(&p.0, &pnext) < T::zero();
+=======
+    let clockwise = pprev.cross_prod(p, pnext) < T::zero();
+>>>>>>> origin/master
     let punit;
     if !vertical {
         punit = unitvector(m, poly, p, idx);
@@ -359,16 +389,25 @@ where
         // implies p.x() < pprev.x()
         punit = Point::new(p.x(), p.y() - hundred);
     }
+<<<<<<< HEAD
     let triarea = triangle_area(p, &punit, &Point(pnext));
     let edgelen = p.euclidean_distance(&Point(pnext));
+=======
+    let triarea = triangle_area(p, punit, pnext);
+    let edgelen = p.euclidean_distance(&pnext);
+>>>>>>> origin/master
     let mut sine = triarea / (T::from(0.5).unwrap() * T::from(100).unwrap() * edgelen);
     if sine < -T::one() || sine > T::one() {
         sine = T::one();
     }
     let angle;
-    let perpunit = unitpvector(p, &punit);
+    let perpunit = unitpvector(p, punit);
     let mut obtuse = false;
+<<<<<<< HEAD
     let left = leftturn(p, &perpunit, &Point(pnext));
+=======
+    let left = leftturn(p, perpunit, pnext);
+>>>>>>> origin/master
     if clockwise {
         if left == 0 {
             obtuse = true;
@@ -396,17 +435,23 @@ where
 }
 
 // self-explanatory
-fn triangle_area<T>(a: &Point<T>, b: &Point<T>, c: &Point<T>) -> T
+fn triangle_area<T>(a: Point<T>, b: Point<T>, c: Point<T>) -> T
 where
     T: Float,
 {
+<<<<<<< HEAD
     (Line::new(a.0, b.0).determinant()
         + Line::new(b.0, c.0).determinant()
         + Line::new(c.0, a.0).determinant()) / (T::one() + T::one())
+=======
+    (Line::new(a, b).determinant()
+        + Line::new(b, c).determinant()
+        + Line::new(c, a).determinant()) / (T::one() + T::one())
+>>>>>>> origin/master
 }
 
 /// Does abc turn left?
-fn leftturn<T>(a: &Point<T>, b: &Point<T>, c: &Point<T>) -> i8
+fn leftturn<T>(a: Point<T>, b: Point<T>, c: Point<T>) -> i8
 where
     T: Float,
 {
@@ -430,17 +475,17 @@ where
     state.iq2 = false;
     state.ap1 = vertex_line_angle(
         state.poly1,
-        &state.p1,
+        state.p1,
         &state.slope,
         state.vertical,
-        &state.p1_idx,
+        state.p1_idx,
     );
     state.aq2 = vertex_line_angle(
         state.poly2,
-        &state.q2,
+        state.q2,
         &state.slope,
         state.vertical,
-        &state.q2_idx,
+        state.q2_idx,
     );
     let minangle = state.ap1.min(state.aq2);
     state.p1prev = state.p1;
@@ -465,15 +510,25 @@ where
     // see Pirzadeh (1999), p31
     if (state.ap1 - minangle).abs() < T::from(0.002).unwrap() {
         state.ip1 = true;
+<<<<<<< HEAD
         let p1next = next_vertex(state.poly1, &state.p1_idx);
         state.p1next = Point(state.poly1.exterior.0[p1next]);
+=======
+        let p1next = next_vertex(state.poly1, state.p1_idx);
+        state.p1next = state.poly1.exterior.0[p1next];
+>>>>>>> origin/master
         state.p1_idx = p1next;
         state.alignment = Some(Aligned::EdgeVertexP);
     }
     if (state.aq2 - minangle).abs() < T::from(0.002).unwrap() {
         state.iq2 = true;
+<<<<<<< HEAD
         let q2next = next_vertex(state.poly2, &state.q2_idx);
         state.q2next = Point(state.poly2.exterior.0[q2next]);
+=======
+        let q2next = next_vertex(state.poly2, state.q2_idx);
+        state.q2next = state.poly2.exterior.0[q2next];
+>>>>>>> origin/master
         state.q2_idx = q2next;
         state.alignment = match state.alignment {
             None => Some(Aligned::EdgeVertexQ),
@@ -538,20 +593,20 @@ where
                     u = unitvector(
                         &(-T::one() / state.slope),
                         state.poly2,
-                        &state.q2,
-                        &state.q2_idx,
+                        state.q2,
+                        state.q2_idx,
                     );
                 } else {
                     u = Point::new(state.q2.x(), state.q2.y() + T::from(100).unwrap());
                 }
             } else {
-                u = unitvector(&T::zero(), state.poly2, &state.q2, &state.q2_idx);
+                u = unitvector(&T::zero(), state.poly2, state.q2, state.q2_idx);
             }
-            let line_1 = leftturn(&u, &state.q2, &state.p1);
-            let line_2 = leftturn(&u, &state.q2, &state.p1prev);
+            let line_1 = leftturn(u, state.q2, state.p1);
+            let line_2 = leftturn(u, state.q2, state.p1prev);
             if line_1 != line_2 && line_1 != -1 && line_2 != -1 {
                 // an orthogonal intersection exists
-                newdist = vertex_line_distance(&state.q2, &state.p1prev, &state.p1);
+                newdist = vertex_line_distance(state.q2, state.p1prev, state.p1);
                 if newdist <= state.dist {
                     // New minimum distance is between edge (p1prev, p1) and q2
                     state.dist = newdist;
@@ -565,20 +620,20 @@ where
                     u = unitvector(
                         &(-T::one() / state.slope),
                         state.poly1,
-                        &state.p1,
-                        &state.p1_idx,
+                        state.p1,
+                        state.p1_idx,
                     );
                 } else {
                     u = Point::new(state.p1.x(), state.p1.y() + T::from(100).unwrap());
                 }
             } else {
-                u = unitvector(&T::zero(), state.poly1, &state.p1, &state.p1_idx);
+                u = unitvector(&T::zero(), state.poly1, state.p1, state.p1_idx);
             }
-            let line_1 = leftturn(&u, &state.p1, &state.q2);
-            let line_2 = leftturn(&u, &state.p1, &state.q2prev);
+            let line_1 = leftturn(u, state.p1, state.q2);
+            let line_2 = leftturn(u, state.p1, state.q2prev);
             if line_1 != line_2 && line_1 != -1 && line_2 != -1 {
                 // an orthogonal intersection exists
-                newdist = vertex_line_distance(&state.p1, &state.q2prev, &state.q2);
+                newdist = vertex_line_distance(state.p1, state.q2prev, state.q2);
                 if newdist <= state.dist {
                     // New minimum distance is between edge (q2prev, q2) and p1
                     state.dist = newdist;
@@ -602,32 +657,32 @@ where
                     u1 = unitvector(
                         &(-T::one() / state.slope),
                         state.poly1,
-                        &state.p1prev,
-                        &state.p1_idx,
+                        state.p1prev,
+                        state.p1_idx,
                     );
                     u2 = unitvector(
                         &(-T::one() / state.slope),
                         state.poly1,
-                        &state.p1,
-                        &state.p1_idx,
+                        state.p1,
+                        state.p1_idx,
                     );
                 } else {
                     u1 = Point::new(state.p1prev.x(), state.p1prev.y() + T::from(100).unwrap());
                     u2 = Point::new(state.p1.x(), state.p1.y() + T::from(100).unwrap());
                 }
             } else {
-                u1 = unitvector(&T::zero(), state.poly1, &state.p1prev, &state.p1_idx);
-                u2 = unitvector(&T::zero(), state.poly1, &state.p1, &state.p1_idx);
+                u1 = unitvector(&T::zero(), state.poly1, state.p1prev, state.p1_idx);
+                u2 = unitvector(&T::zero(), state.poly1, state.p1, state.p1_idx);
             }
-            let line_1a = leftturn(&u1, &state.p1prev, &state.q2prev);
-            let line_1b = leftturn(&u1, &state.p1prev, &state.q2);
-            let line_2a = leftturn(&u2, &state.p1, &state.q2prev);
-            let line_2b = leftturn(&u2, &state.p1, &state.q2);
+            let line_1a = leftturn(u1, state.p1prev, state.q2prev);
+            let line_1b = leftturn(u1, state.p1prev, state.q2);
+            let line_2a = leftturn(u2, state.p1, state.q2prev);
+            let line_2b = leftturn(u2, state.p1, state.q2);
             if line_1a != line_1b && line_1a != -1 && line_1b != -1
                 || line_2a != line_2b && line_2a != -1 && line_2b != -2
             {
                 // an orthogonal intersection exists
-                newdist = vertex_line_distance(&state.p1, &state.q2prev, &state.q2);
+                newdist = vertex_line_distance(state.p1, state.q2prev, state.q2);
                 if newdist <= state.dist {
                     // New minimum distance is between edge (p1prev, p1) and q2prev
                     state.dist = newdist;
@@ -646,7 +701,7 @@ mod test {
         let p = Point::new(0., 0.);
         let q = Point::new(3.8, 5.7);
         let r = Point::new(22.5, 10.);
-        let dist = vertex_line_distance(&p, &q, &r);
+        let dist = vertex_line_distance(p, q, r);
         assert_eq!(dist, 6.850547423381579);
     }
 }

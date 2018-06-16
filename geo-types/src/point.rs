@@ -129,7 +129,7 @@ where
     ///
     /// assert_eq!(p.lng(), 1.234);
     /// ```
-    pub fn lng(&self) -> T {
+    pub fn lng(self) -> T {
         self.x()
     }
 
@@ -160,7 +160,7 @@ where
     ///
     /// assert_eq!(p.lat(), 2.345);
     /// ```
-    pub fn lat(&self) -> T {
+    pub fn lat(self) -> T {
         self.y()
     }
 
@@ -215,12 +215,25 @@ where
     /// let coord_b = Coordinate { x: 3., y: 5. };
     /// let coord_c = Coordinate { x: 7., y: 12. };
     ///
+<<<<<<< HEAD
     /// let cross = coord_a.cross_prod(&coord_b, &coord_c);
     ///
     /// assert_eq!(cross, 2.0)
     /// ```
     pub fn cross_prod(&self, point_b: &Point<T>, point_c: &Point<T>) -> T {
         unimplemented!()
+=======
+    /// let cross = p_a.cross_prod(p_b, p_c);
+    ///
+    /// assert_eq!(cross, 2.0)
+    /// ```
+    pub fn cross_prod(self, point_b: Point<T>, point_c: Point<T>) -> T
+    where
+        T: Float,
+    {
+        (point_b.x() - self.x()) * (point_c.y() - self.y())
+            - (point_b.y() - self.y()) * (point_c.x() - self.x())
+>>>>>>> origin/master
     }
 }
 

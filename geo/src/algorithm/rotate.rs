@@ -2,11 +2,14 @@ use num_traits::{Float, FromPrimitive};
 use ::{Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Coordinate};
 use algorithm::centroid::Centroid;
 use algorithm::map_coords::MapCoords;
+use num_traits::{Float, FromPrimitive};
+use std::iter::Sum;
+use {Line, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon};
 
 // rotate a slice of points "angle" degrees about an origin
 // origin can be an arbitrary point, pass &Point::new(0., 0.)
 // for the actual origin
-fn rotation_matrix<T>(angle: T, origin: &Point<T>, points: &[Point<T>]) -> Vec<Coordinate<T>>
+fn rotation_matrix<T>(angle: T, origin: Point<T>, points: &[Point<T>]) -> Vec<Coordinate<T>>
 where
     T: Float,
 {
@@ -71,7 +74,7 @@ pub trait RotatePoint<T> {
     /// vec.push(Point::new(5.0, 5.0));
     /// vec.push(Point::new(10.0, 10.0));
     /// let linestring = LineString(vec);
-    /// let rotated = linestring.rotate_around_point(-45.0, &Point::new(10.0, 0.0));
+    /// let rotated = linestring.rotate_around_point(-45.0, Point::new(10.0, 0.0));
     /// let mut correct = Vec::new();
     /// correct.push(Point::new(2.9289321881345245, 7.071067811865475));
     /// correct.push(Point::new(10.0, 7.0710678118654755));
@@ -79,7 +82,7 @@ pub trait RotatePoint<T> {
     /// let correct_ls = LineString(correct);
     /// assert_eq!(rotated, correct_ls);
     /// ```
-    fn rotate_around_point(&self, angle: T, point: &Point<T>) -> Self
+    fn rotate_around_point(&self, angle: T, point: Point<T>) -> Self
     where
         T: Float;
 }
@@ -89,7 +92,7 @@ where
     T: Float,
     G: MapCoords<T, T, Output = G>,
 {
-    fn rotate_around_point(&self, angle: T, point: &Point<T>) -> Self {
+    fn rotate_around_point(&self, angle: T, point: Point<T>) -> Self {
         let (sin_theta, cos_theta) = angle.to_radians().sin_cos();
         let x0 = point.x();
         let y0 = point.y();
@@ -120,8 +123,8 @@ where
     T: Float,
 {
     fn rotate(&self, angle: T) -> Self {
-        let pts = vec![Point(self.start), Point(self.end)];
-        let rotated = rotation_matrix(angle, &self.centroid(), &pts);
+        let pts = vec![self.start, self.end];
+        let rotated = rotation_matrix(angle, self.centroid(), &pts);
         Line::new(rotated[0], rotated[1])
     }
 }
@@ -132,13 +135,13 @@ where
 {
     /// Rotate the LineString about its centroid by the given number of degrees
     fn rotate(&self, angle: T) -> Self {
-        LineString(rotation_matrix(angle, &self.centroid().unwrap(), &self.clone().into_points()))
+        LineString(rotation_matrix(angle, self.centroid().unwrap(), &self.0))
     }
 }
 
 impl<T> Rotate<T> for Polygon<T>
 where
-    T: Float + FromPrimitive,
+    T: Float + FromPrimitive + Sum,
 {
     /// Rotate the Polygon about its centroid by the given number of degrees
     fn rotate(&self, angle: T) -> Self {
@@ -149,10 +152,10 @@ where
             self.exterior.centroid().unwrap()
         };
         Polygon::new(
-            LineString(rotation_matrix(angle, &centroid, &self.exterior.clone().into_points())),
+            LineString(rotation_matrix(angle, centroid, &self.exterior.0)),
             self.interiors
                 .iter()
-                .map(|ring| LineString(rotation_matrix(angle, &centroid, &ring.clone().into_points())))
+                .map(|ring| LineString(rotation_matrix(angle, centroid, &ring.0)))
                 .collect(),
         )
     }
@@ -160,7 +163,7 @@ where
 
 impl<T> Rotate<T> for MultiPolygon<T>
 where
-    T: Float + FromPrimitive,
+    T: Float + FromPrimitive + Sum,
 {
     /// Rotate the contained Polygons about their centroids by the given number of degrees
     fn rotate(&self, angle: T) -> Self {
@@ -190,8 +193,8 @@ where
 
 #[cfg(test)]
 mod test {
-    use ::{LineString, Point, Polygon};
     use super::*;
+    use {LineString, Point, Polygon};
     #[test]
     fn test_rotate_around_point() {
         let p = Point::new(1.0, 5.0);
@@ -312,7 +315,7 @@ mod test {
     #[test]
     fn test_rotate_around_point_arbitrary() {
         let p = Point::new(5.0, 10.0);
-        let rotated = p.rotate_around_point(-45., &Point::new(10., 34.));
+        let rotated = p.rotate_around_point(-45., Point::new(10., 34.));
         assert_eq!(rotated, Point::new(-10.506096654409877, 20.564971157455595));
     }
     #[test]
@@ -323,8 +326,11 @@ mod test {
     }
     #[test]
     fn test_rotate_line_around_point() {
-        let line0 = Line::from([(0., 0.), (0., 2.)]);
-        let line1 = Line::from([(0., 0.), (-2., 0.00000000000000012246467991473532)]);
-        assert_eq!(line0.rotate_around_point(90., &Point::new(0., 0.)), line1);
+        let line0 = Line::new(Point::new(0., 0.), Point::new(0., 2.));
+        let line1 = Line::new(
+            Point::new(0., 0.),
+            Point::new(-2., 0.00000000000000012246467991473532),
+        );
+        assert_eq!(line0.rotate_around_point(90., Point::new(0., 0.)), line1);
     }
 }

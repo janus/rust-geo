@@ -28,7 +28,7 @@ where
     ///
     /// assert_eq!(dot, 5.25);
     /// ```
-    pub fn dot(&self, coord: &Coordinate<T>) -> T {
+    pub fn dot(&self, coord: Coordinate<T>) -> T {
         self.x * coord.x + self.y * coord.y
     }
 

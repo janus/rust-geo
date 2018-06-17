@@ -199,7 +199,7 @@ where
     /// assert_eq!(dot, 5.25);
     /// ```
     pub fn dot(&self, point: Point<T>) -> T {
-        unimplemented!()
+        self.0.dot(point.0)
     }
 
     /// Returns the cross product of 3 points. A positive value implies
@@ -220,7 +220,7 @@ where
     /// assert_eq!(cross, 2.0)
     /// ```
     pub fn cross_prod(&self, point_b: Point<T>, point_c: Point<T>) -> T {
-        unimplemented!()
+        self.0.cross_prod(point_b.0, point_c.0)
     }
 }
 

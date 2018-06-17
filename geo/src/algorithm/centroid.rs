@@ -59,8 +59,8 @@ where
         .fold((T::zero(), T::zero()), |accum, line| {
             let tmp = line.determinant();
             (
-                accum.0 + ((line.end.x() + line.start.x()) * tmp),
-                accum.1 + ((line.end.y() + line.start.y()) * tmp),
+                accum.0 + ((line.end.x + line.start.x) * tmp),
+                accum.1 + ((line.end.y + line.start.y) * tmp),
             )
         });
     let six = T::from_i32(6).unwrap();
@@ -307,15 +307,15 @@ mod test {
     #[test]
     fn flat_polygon_test() {
         let p = |x| Point(Coordinate { x: x, y: 1. });
-        let poly = Polygon::new(LineString(vec![p(0.), p(1.), p(0.)]), vec![]);
+        let poly = Polygon::new(LineString::from(vec![p(0.), p(1.), p(0.)]), vec![]);
         assert_eq!(poly.centroid(), Some(p(0.5)));
     }
     #[test]
     fn polygon_flat_interior_test() {
         let p = |x, y| Point(Coordinate { x: x, y: y });
         let poly = Polygon::new(
-            LineString(vec![p(0., 0.), p(0., 1.), p(1., 1.), p(1., 0.), p(0., 0.)]),
-            vec![LineString(vec![p(0., 0.), p(0., 1.), p(0., 0.)])],
+            LineString::from(vec![p(0., 0.), p(0., 1.), p(1., 1.), p(1., 0.), p(0., 0.)]),
+            vec![LineString::from(vec![p(0., 0.), p(0., 1.), p(0., 0.)])],
         );
         assert_eq!(poly.centroid(), Some(p(0.5, 0.5)));
     }
@@ -323,7 +323,7 @@ mod test {
     fn empty_interior_polygon_test() {
         let p = |x, y| Point(Coordinate { x: x, y: y });
         let poly = Polygon::new(
-            LineString(vec![p(0., 0.), p(0., 1.), p(1., 1.), p(1., 0.), p(0., 0.)]),
+            LineString::from(vec![p(0., 0.), p(0., 1.), p(1., 1.), p(1., 0.), p(0., 0.)]),
             vec![LineString(vec![])],
         );
         assert_eq!(poly.centroid(), Some(p(0.5, 0.5)));
@@ -336,7 +336,7 @@ mod test {
     #[test]
     fn multipolygon_one_polygon_test() {
         let p = |x, y| Coordinate { x: x, y: y };
-        let linestring = LineString(vec![p(0., 0.), p(2., 0.), p(2., 2.), p(0., 2.), p(0., 0.)]);
+        let linestring = LineString::from(vec![p(0., 0.), p(2., 0.), p(2., 2.), p(0., 2.), p(0., 0.)]);
         let poly = Polygon::new(linestring, Vec::new());
         assert_eq!(MultiPolygon(vec![poly]).centroid(), Some(p(1., 1.)));
     }

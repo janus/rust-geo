@@ -17,7 +17,7 @@ fn up<T>(u: Point<T>, v: Point<T>) -> bool
 where
     T: Float,
 {
-    u.dot(&v.0) > T::zero()
+    u.dot(v) > T::zero()
 }
 
 fn direction_sign<T>(u: Point<T>, vi: Point<T>, vj: Point<T>) -> T
@@ -77,7 +77,7 @@ where
     let mut max: usize = 0;
     for (i, _) in vertices.iter().enumerate() {
         // if vertices[i] is above prior vertices[max]
-        if above(u, vertices[i], vertices[max]) {
+        if above(u, Point(vertices[i]), Point(vertices[max])) {
             max = i;
         }
     }
@@ -190,7 +190,7 @@ mod test {
             .iter()
             .map(|e| Point::new(e.0, e.1))
             .collect::<Vec<_>>();
-        let poly1 = Polygon::new(LineString(points), vec![]);
+        let poly1 = Polygon::new(LineString::from(points), vec![]);
         let min_x = polymax_naive_indices(Point::new(-1., 0.), &poly1).unwrap();
         let correct = 3_usize;
         assert_eq!(min_x, correct);

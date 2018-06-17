@@ -226,7 +226,7 @@ where
         }
         linestring
             .lines()
-            .map(|line| line_segment_distance(*self, line.start_point(), line.end()))
+            .map(|line| line_segment_distance(*self, line.start_point(), line.end_point()))
             .fold(T::max_value(), |accum, val| accum.min(val))
     }
 }
@@ -247,7 +247,7 @@ where
 {
     /// Minimum distance from a Line to a Point
     fn euclidean_distance(&self, point: &Point<T>) -> T {
-        line_segment_distance(*point, self.start, self.end)
+        line_segment_distance(*point, self.start_point(), self.end_point())
     }
 }
 
@@ -319,7 +319,7 @@ where
     fn euclidean_distance(&self, other: &Polygon<T>) -> T {
         if self.intersects(other) || other.contains(self) {
             T::zero()
-        } else if !other.interiors.is_empty() && ring_contains_point(other, self.0[0]) {
+        } else if !other.interiors.is_empty() && ring_contains_point(other, Point(self.0[0])) {
             // check each ring distance, returning the minimum
             let mut mindist: T = Float::max_value();
             for ring in &other.interiors {
@@ -434,14 +434,14 @@ where
             return T::zero();
         }
         // Containment check
-        if !self.interiors.is_empty() && ring_contains_point(self, &Point(poly2.exterior.0[0])) {
+        if !self.interiors.is_empty() && ring_contains_point(self, Point(poly2.exterior.0[0])) {
             // check each ring distance, returning the minimum
             let mut mindist: T = Float::max_value();
             for ring in &self.interiors {
                 mindist = mindist.min(nearest_neighbour_distance(&poly2.exterior, ring))
             }
             return mindist;
-        } else if !poly2.interiors.is_empty() && ring_contains_point(poly2, self.exterior.0[0]) {
+        } else if !poly2.interiors.is_empty() && ring_contains_point(poly2, Point(self.exterior.0[0])) {
             let mut mindist: T = Float::max_value();
             for ring in &poly2.interiors {
                 mindist = mindist.min(nearest_neighbour_distance(&self.exterior, ring))

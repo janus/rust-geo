@@ -130,8 +130,8 @@ where
     fn rotate(&self, angle: T) -> Self {
         let centroid = self.centroid();
         Line::new(
-            rotate_one(angle, centroid, self.start),
-            rotate_one(angle, centroid, self.end),
+            rotate_one(angle, centroid, self.start_point()),
+            rotate_one(angle, centroid, self.end_point()),
         )
     }
 }
@@ -142,7 +142,7 @@ where
 {
     /// Rotate the LineString about its centroid by the given number of degrees
     fn rotate(&self, angle: T) -> Self {
-        rotate_many(angle, self.centroid().unwrap(), self.0.iter().cloned()).collect()
+        rotate_many(angle, self.centroid().unwrap(), self.points_iter()).collect()
     }
 }
 
@@ -159,10 +159,10 @@ where
             self.exterior.centroid().unwrap()
         };
         Polygon::new(
-            rotate_many(angle, centroid, self.exterior.0.iter().cloned()).collect(),
+            rotate_many(angle, centroid, self.exterior.points_iter()).collect(),
             self.interiors
                 .iter()
-                .map(|ring| rotate_many(angle, centroid, ring.0.iter().cloned()).collect())
+                .map(|ring| rotate_many(angle, centroid, ring.points_iter()).collect())
                 .collect(),
         )
     }

@@ -173,7 +173,7 @@ mod test {
 
     #[test]
     fn empty_linestring_test() {
-        let linestring = LineString::from(vec![]);
+        let linestring = LineString::<f64>::from(vec![]);
         let bbox = linestring.bbox();
         assert!(bbox.is_none());
     }
